@@ -1,0 +1,15 @@
+export enum ETables {
+  CATEGORY = 'category',
+  PRODUCT = 'product',
+  PARTY = 'party',
+  PARTY_GROUP = 'party_group',
+  TRANSACTION = 'transaction',
+  TRANSACTION_ITEM = 'transaction_item',
+  EXPENSE = 'expense',
+  EXPENSE_ITEM = 'expense_item',
+  EXPENSE_CATEGORY = 'expense_category',
+  EXPENSE_BARE_ITEM = 'expense_bare_item',
+  SETTINGS = 'settings',
+  UNIT = 'unit',
+  BUSINESS = 'business',
+}

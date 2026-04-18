@@ -1,0 +1,32 @@
+@use '../abstracts/variables' as *;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px $space-2;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  border-radius: $radius-full;
+  line-height: 1.4;
+
+  &--success {
+    background: $color-success-light;
+    color: $color-success;
+  }
+  &--warning {
+    background: $color-warning-light;
+    color: $color-warning;
+  }
+  &--danger {
+    background: $color-danger-light;
+    color: $color-danger;
+  }
+  &--info {
+    background: $color-info-light;
+    color: $color-info;
+  }
+  &--neutral {
+    background: $color-gray-100;
+    color: $color-gray-600;
+  }
+}

@@ -1,0 +1,46 @@
+@use '../abstracts/variables' as *;
+
+.toast-container {
+  position: fixed;
+  top: $space-4;
+  right: $space-4;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  border-radius: $radius-md;
+  background: $color-surface;
+  box-shadow: $shadow-md;
+  border-left: 4px solid;
+  font-size: $font-size-sm;
+  animation: slide-in-right $transition-base;
+  min-width: 300px;
+
+  &--success { border-left-color: $color-success; }
+  &--warning { border-left-color: $color-warning; }
+  &--danger { border-left-color: $color-danger; }
+  &--info { border-left-color: $color-info; }
+
+  &__message {
+    flex: 1;
+    color: $color-gray-700;
+  }
+
+  &__close {
+    color: $color-gray-400;
+    padding: $space-1;
+    &:hover { color: $color-gray-600; }
+  }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}

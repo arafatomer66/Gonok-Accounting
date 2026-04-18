@@ -1,0 +1,65 @@
+@use 'variables' as *;
+
+// ─── Responsive ──────────────────────────────────────
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == sm { @media (min-width: $breakpoint-sm) { @content; } }
+  @else if $breakpoint == md { @media (min-width: $breakpoint-md) { @content; } }
+  @else if $breakpoint == lg { @media (min-width: $breakpoint-lg) { @content; } }
+  @else if $breakpoint == xl { @media (min-width: $breakpoint-xl) { @content; } }
+}
+
+@mixin mobile-only {
+  @media (max-width: $breakpoint-md - 1px) { @content; }
+}
+
+// ─── Card ────────────────────────────────────────────
+@mixin card {
+  background: $color-surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-xs;
+  border: 1px solid $color-border;
+}
+
+// ─── Flex helpers ────────────────────────────────────
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// ─── Text truncation ─────────────────────────────────
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ─── Focus ring ──────────────────────────────────────
+@mixin focus-ring {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba($color-primary, 0.3);
+}
+
+// ─── Scrollbar ───────────────────────────────────────
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $color-gray-300;
+    border-radius: $radius-full;
+    &:hover {
+      background: $color-gray-400;
+    }
+  }
+}

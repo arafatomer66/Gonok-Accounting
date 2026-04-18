@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+tmp/
+
+# Nx
+.nx/cache
+.nx/workspace-data
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+
+# Logs
+*.log
+
+# Angular
+.angular/
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Misc
+*.tgz

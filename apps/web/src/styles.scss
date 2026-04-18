@@ -1,0 +1,56 @@
+// ─── Gonok Design System ─────────────────────────────
+// Base
+@use 'styles/base/reset';
+
+// Components
+@use 'styles/components/button';
+@use 'styles/components/input';
+@use 'styles/components/card';
+@use 'styles/components/table';
+@use 'styles/components/badge';
+@use 'styles/components/modal';
+@use 'styles/components/toast';
+
+// Layout
+@use 'styles/layout/sidebar';
+@use 'styles/layout/navbar';
+@use 'styles/layout/shell';
+
+// ─── Page header ─────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+}
+
+// ─── Utility classes ─────────────────────────────────
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.text-muted { color: var(--color-text-secondary, #6b7280); }
+.text-success { color: var(--color-success, #16a34a); }
+.text-danger { color: var(--color-danger, #dc2626); }
+.font-medium { font-weight: 500; }
+.font-bold { font-weight: 700; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-4 { gap: 1rem; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.w-full { width: 100%; }
+.hidden { display: none; }
+.tabular-nums { font-variant-numeric: tabular-nums; }

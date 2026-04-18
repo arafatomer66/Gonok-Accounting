@@ -1,0 +1,8 @@
+export enum EDurationType {
+  TODAY = 'TODAY',
+  THIS_WEEK = 'THIS_WEEK',
+  THIS_MONTH = 'THIS_MONTH',
+  THIS_QUARTER = 'THIS_QUARTER',
+  THIS_YEAR = 'THIS_YEAR',
+  CUSTOM = 'CUSTOM',
+}
