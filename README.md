@@ -1,112 +1,211 @@
-# New Nx Repository
+# Gonok (গণক) — Offline-First Accounting System
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A full-featured accounting system built for Bangladeshi small businesses. Works offline, syncs across devices, and supports Bangla + English.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Tech Stack
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
-<!-- BEGIN: nx-cloud -->
-## Try the full Nx platform
-🚀 If you haven't connected to Nx Cloud yet, [complete your setup here](https://cloud.nx.app/setup/connect-workspace/guide). Get faster builds with remote caching, distributed task execution, and self-healing CI. [See how your workspace can benefit](#nx-cloud).
-<!-- END: nx-cloud -->
-## Generate a library
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Angular 21, @ngrx/signals, PouchDB, SCSS |
+| Backend | Express.js, TypeORM, JWT Auth |
+| Databases | PostgreSQL (auth), CouchDB (data sync), PouchDB (offline storage) |
+| Monorepo | Nx |
+| E2E Tests | Cypress |
 
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
-```
-
-## Run tasks
-
-To build the library use:
-
-```sh
-npx nx build pkg1
-```
-
-To run any task with Nx use:
-
-```sh
-npx nx <target> <project-name>
-```
-
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
-
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Versioning and releasing
-
-To version and release the library use
+## Architecture
 
 ```
-npx nx release
+apps/
+  web/          → Angular frontend (standalone components, signals, PouchDB)
+  api/          → Express backend (TypeORM, PostgreSQL, JWT auth)
+libs/
+  shared-types/ → Shared TypeScript interfaces, enums, models
+cypress/        → E2E tests (9 specs)
 ```
 
-Pass `--dry-run` to see what would happen without actually releasing the library.
+All business data (products, parties, transactions, expenses) lives in PouchDB (browser) and syncs bidirectionally with CouchDB. PostgreSQL only stores auth data.
 
-[Learn more about Nx release &raquo;](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-## Keep TypeScript project references up to date
+## Local Setup
 
-Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
+### Prerequisites
 
-To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
+- **Node.js** 20 or later
+- **Docker** and **Docker Compose** (for databases)
+- **Git**
 
-```sh
-npx nx sync
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/arafatomer66/Gonok-Accounting.git
+cd Gonok-Accounting
 ```
 
-You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
+### 2. Install dependencies
 
-```sh
-npx nx sync:check
+```bash
+npm install
 ```
 
-[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
+### 3. Start the databases
 
-## Nx Cloud
+The project includes a `docker-compose.yml` that runs PostgreSQL and CouchDB:
 
-Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Set up CI (non-Github Actions CI)
-
-**Note:** This is only required if your CI provider is not GitHub Actions.
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
+```bash
+docker compose up -d
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+This starts:
+- **PostgreSQL** on port `5433` (user: `gonok`, password: `gonok`, database: `gonok`)
+- **CouchDB** on port `5984` (user: `admin`, password: `password`)
 
-## Install Nx Console
+Verify they're running:
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+```bash
+docker compose ps
+```
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+> **Without Docker:** If you prefer running databases natively, install PostgreSQL and CouchDB manually and ensure they match the ports/credentials above. CouchDB must have CORS enabled.
 
-## Useful links
+### 4. Configure environment (optional)
 
-Learn more:
+The API uses sensible defaults for local development. To override, create a `.env` file in the project root:
 
-- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```env
+# Database (PostgreSQL)
+DB_HOST=localhost
+DB_PORT=5433
+DB_USERNAME=gonok
+DB_PASSWORD=gonok
+DB_NAME=gonok
 
-And join the Nx community:
+# CouchDB
+COUCHDB_URL=http://localhost:5984
+COUCHDB_USERNAME=admin
+COUCHDB_PASSWORD=password
 
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-# Gonok-A-full-featured-offline-first-accounting-system
-# Gonok-A-full-featured-offline-first-accounting-system
-# Gonok-A-full-featured-offline-first-accounting-system
-# Gonok-A-full-featured-offline-first-accounting-system
-# Gonok-A-full-featured-offline-first-accounting-system
+# JWT
+JWT_SECRET=your-secret-here
+JWT_REFRESH_SECRET=your-refresh-secret-here
+
+# Server
+PORT=3333
+NODE_ENV=development
+```
+
+### 5. Start the development servers
+
+**Option A — Run both in separate terminals:**
+
+```bash
+# Terminal 1: API server (port 3333)
+npx nx serve api
+
+# Terminal 2: Web app (port 4200)
+npx nx serve web
+```
+
+**Option B — Run both at once:**
+
+```bash
+npx nx run-many --target=serve --projects=api,web --parallel
+```
+
+The web app will be available at **http://localhost:4200**. The API runs at **http://localhost:3333** and the web app proxies `/api` requests to it automatically.
+
+> Database migrations run automatically when the API server starts.
+
+### 6. Access the app
+
+1. Open **http://localhost:4200** in your browser
+2. Register a new account with any phone number
+3. Use OTP code **`123456`** (dev mode)
+4. Create a business and start using the app
+
+---
+
+## Common Commands
+
+| Command | Description |
+|---------|-------------|
+| `npx nx serve api` | Start API server on port 3333 |
+| `npx nx serve web` | Start web app on port 4200 |
+| `npx nx build web` | Production build of web app |
+| `npx nx build api` | Production build of API |
+| `npx nx run-many --target=build --all` | Build everything |
+| `npx nx run-many --target=lint --all` | Lint all projects |
+| `npx cypress run --browser chrome` | Run e2e tests |
+| `npx cypress open` | Open Cypress test runner |
+| `docker compose up -d` | Start databases |
+| `docker compose down` | Stop databases |
+| `docker compose down -v` | Stop databases and delete data |
+
+---
+
+## Project Structure
+
+```
+apps/
+  api/
+    src/
+      config/          → Database and environment config
+      entities/        → TypeORM entities (User, Business, BusinessUser)
+      middleware/      → Auth and error middleware
+      routes/          → API route handlers
+      services/        → Business logic (auth, CouchDB provisioning)
+  web/
+    src/
+      app/
+        core/
+          guards/      → Auth and business route guards
+          services/    → PouchDB, sync, auth, API services
+          stores/      → @ngrx/signals stores (auth, catalog, transaction, expense)
+        features/      → Feature pages (dashboard, products, parties, transactions, etc.)
+        layouts/       → Shell, sidebar, navbar
+        shared/        → Reusable components (confirm dialog, search, transaction form)
+      styles/          → Global SCSS (variables, mixins, components)
+libs/
+  shared-types/        → Shared interfaces, enums, models
+cypress/
+  e2e/                 → 9 e2e test specs
+```
+
+---
+
+## Testing
+
+The project uses Cypress for end-to-end testing. Make sure both servers are running before running tests.
+
+```bash
+# Start servers first
+npx nx serve api &
+npx nx serve web &
+
+# Run tests
+npx cypress run --browser chrome
+
+# Or open the Cypress UI
+npx cypress open
+```
+
+**Test user:** phone `01700000000`, OTP `123456`
+
+---
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `ECONNREFUSED` on port 5433 | Run `docker compose up -d` to start PostgreSQL |
+| `ECONNREFUSED` on port 5984 | Run `docker compose up -d` to start CouchDB |
+| Sync errors in browser console | Ensure CouchDB CORS is enabled |
+| Port 4200 already in use | Kill the process: `lsof -ti:4200 \| xargs kill` |
+| Port 3333 already in use | Kill the process: `lsof -ti:3333 \| xargs kill` |
+| `node_modules` issues | Delete and reinstall: `rm -rf node_modules && npm install` |
+
+---
+
+## License
+
+MIT
