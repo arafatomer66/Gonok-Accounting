@@ -20,7 +20,8 @@
             "input": "apps/web/public"
           }
         ],
-        "styles": ["apps/web/src/styles.scss"]
+        "styles": ["apps/web/src/styles.scss"],
+        "serviceWorker": "apps/web/ngsw-config.json"
       },
       "configurations": {
         "production": {
@@ -68,6 +69,17 @@
     "test": {
       "executor": "@angular/build:unit-test",
       "options": {}
+    },
+    "build-pwa": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx nx build web",
+          "cp node_modules/@angular/service-worker/ngsw-worker.js dist/apps/web/browser/",
+          "npx ngsw-config dist/apps/web/browser apps/web/ngsw-config.json /"
+        ],
+        "parallel": false
+      }
     },
     "serve-static": {
       "continuous": true,

@@ -27,13 +27,17 @@ export class SyncService {
 
     const localDb = this.pouchDb.getDatabase();
 
-    // Phase 1: Initial one-time sync
+    // Phase 1: Initial one-time sync (with timeout so offline doesn't block)
     this.status.set('syncing');
     try {
-      await localDb.sync(this.remoteDb, { live: false, retry: true });
+      const syncPromise = localDb.sync(this.remoteDb, { live: false, retry: false });
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Sync timeout')), 5000),
+      );
+      await Promise.race([syncPromise, timeoutPromise]);
       this.lastSyncTime.set(Date.now());
     } catch (err) {
-      console.warn('[Sync] Initial sync failed, continuing with live sync:', err);
+      console.warn('[Sync] Initial sync failed, continuing offline:', err);
     }
 
     // Phase 2: Continuous live sync
