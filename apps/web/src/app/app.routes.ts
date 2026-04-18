@@ -109,9 +109,9 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'reports',
-        loadComponent: () =>
-          import('./features/reports/reports.component').then(
-            (m) => m.ReportsComponent,
+        loadChildren: () =>
+          import('./features/reports/reports.routes').then(
+            (m) => m.REPORT_ROUTES,
           ),
       },
       {
