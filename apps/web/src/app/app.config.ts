@@ -1,6 +1,7 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, APP_INITIALIZER, inject } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, APP_INITIALIZER, inject, isDevMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideServiceWorker } from '@angular/service-worker';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { firstValueFrom } from 'rxjs';
@@ -30,9 +31,9 @@ function initializeApp(): () => Promise<void> {
     // Restore auth session
     authStore.restoreSession();
 
-    // If authenticated, sync from CouchDB first, then load businesses
+    // If authenticated, start sync in background, then load businesses
     if (authStore.isAuthenticated()) {
-      await syncBootstrap.start();
+      syncBootstrap.start();
       try {
         const businesses = await firstValueFrom(api.get<Business[]>('/businesses'));
         authStore.setBusinesses(businesses);
@@ -67,5 +68,9 @@ export const appConfig: ApplicationConfig = {
       useFactory: initializeApp,
       multi: true,
     },
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 };

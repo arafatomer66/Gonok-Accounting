@@ -165,8 +165,8 @@ export class LoginComponent {
       next: async (result) => {
         this.authStore.setAuth(result.user, result.access_token, result.refresh_token);
 
-        // Wait for initial sync from CouchDB before loading data
-        await this.syncBootstrap.start();
+        // Start sync in background — don't block login
+        this.syncBootstrap.start();
 
         // Fetch businesses then navigate
         this.api.get<Business[]>('/businesses').subscribe({
