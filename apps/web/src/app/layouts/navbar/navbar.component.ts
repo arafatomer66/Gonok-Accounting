@@ -18,6 +18,13 @@ import { BusinessSwitchService } from '../../core/services/business-switch.servi
       </div>
 
       <div class="navbar__right">
+        <!-- Search shortcut hint -->
+        <button class="navbar__search-hint" (click)="openSearch()">
+          <span>🔍</span>
+          <span class="navbar__search-text">Search...</span>
+          <kbd>⌘K</kbd>
+        </button>
+
         <!-- Sync status -->
         <span class="navbar__sync" [class]="'navbar__sync--' + syncService.status()">
           {{ syncLabel() }}
@@ -67,6 +74,36 @@ import { BusinessSwitchService } from '../../core/services/business-switch.servi
   `,
   styles: `
     @use '../../../styles/abstracts/variables' as *;
+
+    .navbar__search-hint {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      padding: $space-1 $space-3;
+      border: 1px solid $color-border;
+      border-radius: $radius-lg;
+      background: $color-gray-50;
+      cursor: pointer;
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+      transition: all $transition-fast;
+
+      &:hover { border-color: $color-primary; background: $color-surface; }
+
+      kbd {
+        font-size: 10px;
+        padding: 1px 5px;
+        background: $color-surface;
+        border: 1px solid $color-gray-300;
+        border-radius: 3px;
+        font-family: monospace;
+        color: $color-text-muted;
+      }
+    }
+
+    .navbar__search-text {
+      @media (max-width: 768px) { display: none; }
+    }
 
     .navbar__sync {
       font-size: $font-size-xs;
@@ -152,6 +189,7 @@ export class NavbarComponent {
   currentLang = input('en');
   menuToggle = output<void>();
   toggleLang = output<void>();
+  searchOpen = output<void>();
 
   showUserMenu = signal(false);
 
@@ -169,6 +207,10 @@ export class NavbarComponent {
   onBusinessChange(event: Event): void {
     const uuid = (event.target as HTMLSelectElement).value;
     this.bizSwitch.switchTo(uuid);
+  }
+
+  openSearch(): void {
+    this.searchOpen.emit();
   }
 
   logout(): void {

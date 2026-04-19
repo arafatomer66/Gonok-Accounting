@@ -22,6 +22,7 @@ import { ITransaction, ETransactionType } from '@org/shared-types';
       partyLabel="Customer"
       invoiceLabel="Invoice No"
       emptyMessage="No sales transactions yet."
+      [showProfit]="true"
       (edit)="editTx($event)"
       (delete)="confirmDelete($event)"
       (printTx)="printInvoice($event)"
