@@ -89,7 +89,8 @@
     "import": "Import Data",
     "branches": "Branches",
     "backup": "Backup & Restore",
-    "activity_log": "Activity Log"
+    "activity_log": "Activity Log",
+    "pos": "POS"
   },
   "dashboard": {
     "total_sales": "Total Sales",

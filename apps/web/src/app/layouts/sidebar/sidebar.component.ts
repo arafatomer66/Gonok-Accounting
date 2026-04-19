@@ -92,6 +92,7 @@ export class SidebarComponent {
       titleKey: 'menu.main',
       items: [
         { labelKey: 'menu.dashboard', icon: '📊', route: '/dashboard' },
+        { labelKey: 'menu.pos', icon: '🖥️', route: '/pos' },
       ],
     },
     {

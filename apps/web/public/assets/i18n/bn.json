@@ -89,7 +89,8 @@
     "import": "ডাটা ইম্পোর্ট",
     "branches": "শাখা সমূহ",
     "backup": "ব্যাকআপ ও রিস্টোর",
-    "activity_log": "কার্যক্রম লগ"
+    "activity_log": "কার্যক্রম লগ",
+    "pos": "পিওএস"
   },
   "dashboard": {
     "total_sales": "মোট বিক্রয়",

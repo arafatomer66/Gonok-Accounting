@@ -45,6 +45,13 @@ export const appRoutes: Route[] = [
           ),
       },
       {
+        path: 'pos',
+        loadComponent: () =>
+          import('./features/pos/pos.component').then(
+            (m) => m.PosComponent,
+          ),
+      },
+      {
         path: 'products',
         loadComponent: () =>
           import('./features/products/products.component').then(
