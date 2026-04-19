@@ -11,6 +11,8 @@ export interface IExpense extends IBaseModel {
   description: string | null;
   payment_type: string;
   cheque_ref_no: string | null;
+  bank_account_uuid: string | null;
+  mobile_tx_id: string | null;
   total_amount: number;
   total_quantity: number;
 }

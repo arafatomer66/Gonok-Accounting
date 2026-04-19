@@ -80,7 +80,12 @@
     "expenses": "Expenses",
     "reports": "Reports",
     "settings": "Settings",
-    "users": "Users"
+    "users": "Users",
+    "finance": "Finance",
+    "due_list": "Due List",
+    "cash_adjustment": "Cash Adjustment",
+    "bank": "Bank",
+    "businesses": "Businesses"
   },
   "dashboard": {
     "total_sales": "Total Sales",

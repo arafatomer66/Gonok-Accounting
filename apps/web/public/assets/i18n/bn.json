@@ -80,7 +80,12 @@
     "expenses": "খরচ",
     "reports": "রিপোর্টস",
     "settings": "সেটিংস",
-    "users": "ইউজার"
+    "users": "ইউজার",
+    "finance": "আর্থিক",
+    "due_list": "বাকি তালিকা",
+    "cash_adjustment": "নগদ সমন্বয়",
+    "bank": "ব্যাংক",
+    "businesses": "ব্যবসা সমূহ"
   },
   "dashboard": {
     "total_sales": "মোট বিক্রয়",

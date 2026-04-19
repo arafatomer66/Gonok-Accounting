@@ -156,6 +156,8 @@ export const ExpenseStore = signalStore(
           description: data.description ?? null,
           payment_type: data.payment_type ?? 'Cash',
           cheque_ref_no: data.cheque_ref_no ?? null,
+          bank_account_uuid: data.bank_account_uuid ?? null,
+          mobile_tx_id: data.mobile_tx_id ?? null,
           total_amount: data.total_amount ?? 0,
           total_quantity: data.total_quantity ?? 0,
           created_at: now,

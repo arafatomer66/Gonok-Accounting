@@ -101,6 +101,17 @@ export const AuthStore = signalStore(
       setLoading(loading: boolean): void {
         patchState(store, { loading });
       },
+
+      updateUser(user: AuthUser): void {
+        patchState(store, { user });
+      },
+
+      updateBusiness(uuid: string, data: Partial<Business>): void {
+        const businesses = store.businesses().map((b) =>
+          b.uuid === uuid ? { ...b, ...data } : b,
+        );
+        patchState(store, { businesses });
+      },
     };
   }),
 );

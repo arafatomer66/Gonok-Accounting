@@ -3,13 +3,23 @@ import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { CatalogStore } from '../../../core/stores/catalog.store';
 import { TransactionStore } from '../../../core/stores/transaction.store';
+import { PouchDbService } from '../../../core/services/pouchdb.service';
+import { AuthStore } from '../../../core/stores/auth.store';
 import {
   ITransaction,
   ITransactionItem,
+  ETables,
   ETransactionType,
   ETransactionMode,
   EPaymentType,
 } from '@org/shared-types';
+
+interface IBankAccount {
+  uuid: string;
+  bank_name: string;
+  account_name: string;
+  account_number: string;
+}
 
 interface ItemLine {
   item_uuid: string;
@@ -113,24 +123,44 @@ interface ItemLine {
             </div>
           }
 
-          <!-- Payment fields (for PAYMENT_IN / PAYMENT_OUT) -->
-          @if (isPayment()) {
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">Payment Type</label>
-                <select class="form-input" [(ngModel)]="paymentType" name="paymentType">
+          <!-- Payment Type -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Payment Type</label>
+              <select class="form-input" [(ngModel)]="paymentType" name="paymentType">
+                <optgroup label="Cash">
                   <option value="Cash">Cash</option>
+                </optgroup>
+                <optgroup label="Cheque">
                   <option value="Cheque">Cheque</option>
-                </select>
-              </div>
-              @if (paymentType === 'Cheque') {
-                <div class="form-group">
-                  <label class="form-label">Cheque Ref No.</label>
-                  <input class="form-input" type="text" [(ngModel)]="chequeRefNo" name="chequeRefNo" />
-                </div>
-              }
+                </optgroup>
+                <optgroup label="Mobile Banking">
+                  <option value="bKash">bKash</option>
+                  <option value="Nagad">Nagad</option>
+                  <option value="Rocket">Rocket</option>
+                </optgroup>
+                @if (bankAccounts().length > 0) {
+                  <optgroup label="Bank">
+                    @for (acc of bankAccounts(); track acc.uuid) {
+                      <option [value]="'Bank:' + acc.uuid">{{ acc.bank_name }} ({{ acc.account_number }})</option>
+                    }
+                  </optgroup>
+                }
+              </select>
             </div>
-          }
+            @if (paymentType === 'Cheque') {
+              <div class="form-group">
+                <label class="form-label">Cheque Ref No.</label>
+                <input class="form-input" type="text" [(ngModel)]="chequeRefNo" name="chequeRefNo" />
+              </div>
+            }
+            @if (paymentType === 'bKash' || paymentType === 'Nagad' || paymentType === 'Rocket' || paymentType.startsWith('Bank:')) {
+              <div class="form-group">
+                <label class="form-label">Transaction ID / Ref</label>
+                <input class="form-input" type="text" [(ngModel)]="chequeRefNo" name="txRef" placeholder="Transaction ID" />
+              </div>
+            }
+          </div>
 
           <!-- Totals -->
           <div class="totals-section">
@@ -244,6 +274,10 @@ interface ItemLine {
 export class TransactionFormComponent implements OnInit {
   catalogStore = inject(CatalogStore);
   private transactionStore = inject(TransactionStore);
+  private pouchDb = inject(PouchDbService);
+  private authStore = inject(AuthStore);
+
+  bankAccounts = signal<IBankAccount[]>([]);
 
   txType = input.required<ETransactionType>();
   transaction = input<ITransaction | null>(null);
@@ -332,7 +366,14 @@ export class TransactionFormComponent implements OnInit {
     () => Math.max(0, this.totalAmount() - this.paidAmount),
   );
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    // Load bank accounts
+    const bizUuid = this.authStore.activeBusinessUuid();
+    if (bizUuid) {
+      const accs = await this.pouchDb.findByBusiness<IBankAccount>(ETables.BANK_ACCOUNT, bizUuid);
+      this.bankAccounts.set(accs);
+    }
+
     const t = this.transaction();
     if (t) {
       this.transactionMode = (t.transaction_mode as ETransactionMode) || ETransactionMode.CASH;
@@ -464,6 +505,11 @@ export class TransactionFormComponent implements OnInit {
       return;
     }
 
+    if ((this.paymentType === EPaymentType.BKASH || this.paymentType === EPaymentType.NAGAD || this.paymentType === EPaymentType.ROCKET) && !this.chequeRefNo.trim()) {
+      this.error.set('Transaction ID is required for mobile banking payments');
+      return;
+    }
+
     this.saving.set(true);
     this.error.set('');
 
@@ -482,7 +528,8 @@ export class TransactionFormComponent implements OnInit {
       description: this.description.trim() || null,
       invoice_no: this.invoiceNo.trim() || null,
       order_number: this.invoiceNo.trim() || null,
-      payment_type: this.isPayment() ? this.paymentType : null,
+      payment_type: this.paymentType.startsWith('Bank:') ? 'Bank' : this.paymentType,
+      bank_account_uuid: this.paymentType.startsWith('Bank:') ? this.paymentType.split(':')[1] : null,
       cheque_ref_no: this.chequeRefNo.trim() || null,
       discount: this.discount,
       total_amount: total,

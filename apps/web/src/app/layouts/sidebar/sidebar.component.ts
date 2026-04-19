@@ -1,22 +1,23 @@
 import { Component, inject, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthStore } from '../../core/stores/auth.store';
 
 interface NavItem {
-  label: string;
+  labelKey: string;
   icon: string;
   route: string;
 }
 
 interface NavSection {
-  title: string;
+  titleKey: string;
   items: NavItem[];
 }
 
 @Component({
   selector: 'gonok-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, TranslateModule],
   template: `
     <aside class="sidebar" [class.sidebar--collapsed]="collapsed()">
       <div class="sidebar__header">
@@ -27,8 +28,8 @@ interface NavSection {
       </div>
 
       <nav class="sidebar__nav">
-        @for (section of navSections; track section.title) {
-          <div class="sidebar__section-title">{{ section.title }}</div>
+        @for (section of navSections; track section.titleKey) {
+          <div class="sidebar__section-title">{{ section.titleKey | translate }}</div>
           @for (item of section.items; track item.route) {
             <a
               class="sidebar__nav-item"
@@ -37,7 +38,7 @@ interface NavSection {
               (click)="navClicked.emit()"
             >
               <span class="sidebar__nav-icon">{{ item.icon }}</span>
-              <span class="sidebar__nav-label">{{ item.label }}</span>
+              <span class="sidebar__nav-label">{{ item.labelKey | translate }}</span>
             </a>
           }
         }
@@ -88,50 +89,50 @@ export class SidebarComponent {
 
   navSections: NavSection[] = [
     {
-      title: 'Main',
+      titleKey: 'menu.main',
       items: [
-        { label: 'Dashboard', icon: '📊', route: '/dashboard' },
+        { labelKey: 'menu.dashboard', icon: '📊', route: '/dashboard' },
       ],
     },
     {
-      title: 'Sales',
+      titleKey: 'menu.sales_section',
       items: [
-        { label: 'Sales', icon: '🛒', route: '/sales' },
-        { label: 'Sales Return', icon: '↩️', route: '/sales-return' },
-        { label: 'Payment In', icon: '💰', route: '/payment-in' },
+        { labelKey: 'menu.sales', icon: '🛒', route: '/sales' },
+        { labelKey: 'menu.sales_return', icon: '↩️', route: '/sales-return' },
+        { labelKey: 'menu.payment_in', icon: '💰', route: '/payment-in' },
       ],
     },
     {
-      title: 'Purchase',
+      titleKey: 'menu.purchase_section',
       items: [
-        { label: 'Purchase', icon: '📦', route: '/purchase' },
-        { label: 'Purchase Return', icon: '↩️', route: '/purchase-return' },
-        { label: 'Payment Out', icon: '💸', route: '/payment-out' },
+        { labelKey: 'menu.purchase', icon: '📦', route: '/purchase' },
+        { labelKey: 'menu.purchase_return', icon: '↩️', route: '/purchase-return' },
+        { labelKey: 'menu.payment_out', icon: '💸', route: '/payment-out' },
       ],
     },
     {
-      title: 'Master',
+      titleKey: 'menu.master',
       items: [
-        { label: 'Parties', icon: '👥', route: '/parties' },
-        { label: 'Products', icon: '📋', route: '/products' },
-        { label: 'Expenses', icon: '💳', route: '/expenses' },
+        { labelKey: 'menu.parties', icon: '👥', route: '/parties' },
+        { labelKey: 'menu.products', icon: '📋', route: '/products' },
+        { labelKey: 'menu.expenses', icon: '💳', route: '/expenses' },
       ],
     },
     {
-      title: 'Finance',
+      titleKey: 'menu.finance',
       items: [
-        { label: 'Due List', icon: '📑', route: '/due-list' },
-        { label: 'Cash Adjustment', icon: '💵', route: '/cash-adjustment' },
-        { label: 'Bank', icon: '🏦', route: '/bank' },
+        { labelKey: 'menu.due_list', icon: '📑', route: '/due-list' },
+        { labelKey: 'menu.cash_adjustment', icon: '💵', route: '/cash-adjustment' },
+        { labelKey: 'menu.bank', icon: '🏦', route: '/bank' },
       ],
     },
     {
-      title: 'Others',
+      titleKey: 'menu.others',
       items: [
-        { label: 'Reports', icon: '📈', route: '/reports' },
-        { label: 'Businesses', icon: '🏢', route: '/businesses' },
-        { label: 'Settings', icon: '⚙️', route: '/settings' },
-        { label: 'Users', icon: '👤', route: '/users' },
+        { labelKey: 'menu.reports', icon: '📈', route: '/reports' },
+        { labelKey: 'menu.businesses', icon: '🏢', route: '/businesses' },
+        { labelKey: 'menu.settings', icon: '⚙️', route: '/settings' },
+        { labelKey: 'menu.users', icon: '👤', route: '/users' },
       ],
     },
   ];

@@ -10,6 +10,10 @@ export enum ETransactionType {
 export enum EPaymentType {
   CASH = 'Cash',
   CHEQUE = 'Cheque',
+  BKASH = 'bKash',
+  NAGAD = 'Nagad',
+  ROCKET = 'Rocket',
+  BANK = 'Bank',
 }
 
 export enum ETransactionMode {

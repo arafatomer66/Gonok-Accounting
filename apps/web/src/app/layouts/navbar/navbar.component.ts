@@ -1,5 +1,6 @@
 import { Component, inject, input, output, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthStore } from '../../core/stores/auth.store';
 import { SyncService } from '../../core/services/sync.service';
 import { ConnectionService } from '../../core/services/connection.service';
@@ -8,6 +9,7 @@ import { BusinessSwitchService } from '../../core/services/business-switch.servi
 @Component({
   selector: 'gonok-navbar',
   standalone: true,
+  imports: [TranslateModule, RouterLink],
   template: `
     <header class="navbar" [class.navbar--sidebar-collapsed]="sidebarCollapsed()">
       <div class="navbar__left">
@@ -23,7 +25,7 @@ import { BusinessSwitchService } from '../../core/services/business-switch.servi
 
         <!-- Online/Offline -->
         @if (!connection.isOnline()) {
-          <span class="badge badge--warning">Offline</span>
+          <span class="badge badge--warning">{{ 'sync.offline' | translate }}</span>
         }
 
         <!-- Business selector -->
@@ -55,7 +57,8 @@ import { BusinessSwitchService } from '../../core/services/business-switch.servi
                 {{ authStore.user()?.name }}
                 <small>{{ authStore.user()?.phone }}</small>
               </div>
-              <button class="navbar__dropdown-item" (click)="logout()">Logout</button>
+              <a class="navbar__dropdown-item" routerLink="/profile" (click)="showUserMenu.set(false)">Profile</a>
+              <button class="navbar__dropdown-item" (click)="logout()">{{ 'home.logout' | translate }}</button>
             </div>
           }
         </div>

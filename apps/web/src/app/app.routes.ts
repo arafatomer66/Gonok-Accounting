@@ -156,6 +156,13 @@ export const appRoutes: Route[] = [
             (m) => m.BusinessListComponent,
           ),
       },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/profile/profile.component').then(
+            (m) => m.ProfileComponent,
+          ),
+      },
     ],
   },
 

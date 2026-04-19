@@ -12,6 +12,8 @@ export interface ITransaction extends IBaseModel, ICouchDoc {
   order_number: string | null;
   payment_type: string | null;
   cheque_ref_no: string | null;
+  bank_account_uuid: string | null;
+  mobile_tx_id: string | null;
   items: ITransactionItem[];
   discount: number;
   total_amount: number;

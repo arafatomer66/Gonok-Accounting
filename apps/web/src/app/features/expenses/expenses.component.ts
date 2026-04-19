@@ -4,7 +4,15 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { ExpenseStore } from '../../core/stores/expense.store';
 import { SearchInputComponent } from '../../shared/components/search-input/search-input.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { IExpense, IExpenseItem } from '@org/shared-types';
+import { IExpense, IExpenseItem, ETables } from '@org/shared-types';
+import { PouchDbService } from '../../core/services/pouchdb.service';
+import { AuthStore } from '../../core/stores/auth.store';
+
+interface IBankAccountRef {
+  uuid: string;
+  bank_name: string;
+  account_number: string;
+}
 
 interface ExpenseItemLine {
   item_name: string;
@@ -114,14 +122,36 @@ interface ExpenseItemLine {
               <div class="form-group">
                 <label class="form-label">Payment Type</label>
                 <select class="form-input" [(ngModel)]="formPaymentType" name="payType">
-                  <option value="Cash">Cash</option>
-                  <option value="Cheque">Cheque</option>
+                  <optgroup label="Cash">
+                    <option value="Cash">Cash</option>
+                  </optgroup>
+                  <optgroup label="Cheque">
+                    <option value="Cheque">Cheque</option>
+                  </optgroup>
+                  <optgroup label="Mobile Banking">
+                    <option value="bKash">bKash</option>
+                    <option value="Nagad">Nagad</option>
+                    <option value="Rocket">Rocket</option>
+                  </optgroup>
+                  @if (bankAccounts().length > 0) {
+                    <optgroup label="Bank">
+                      @for (acc of bankAccounts(); track acc.uuid) {
+                        <option [value]="'Bank:' + acc.uuid">{{ acc.bank_name }} ({{ acc.account_number }})</option>
+                      }
+                    </optgroup>
+                  }
                 </select>
               </div>
               @if (formPaymentType === 'Cheque') {
                 <div class="form-group">
                   <label class="form-label">Cheque Ref No</label>
                   <input class="form-input" type="text" [(ngModel)]="formChequeRef" name="chequeRef" />
+                </div>
+              }
+              @if (formPaymentType === 'bKash' || formPaymentType === 'Nagad' || formPaymentType === 'Rocket') {
+                <div class="form-group">
+                  <label class="form-label">Transaction ID</label>
+                  <input class="form-input" type="text" [(ngModel)]="formMobileTxId" name="mobileTxId" placeholder="Transaction ID" />
                 </div>
               }
             </div>
@@ -268,9 +298,12 @@ interface ExpenseItemLine {
 })
 export class ExpensesComponent implements OnInit {
   expenseStore = inject(ExpenseStore);
+  private pouchDb = inject(PouchDbService);
+  private authStore = inject(AuthStore);
 
   searchTerm = signal('');
   showForm = signal(false);
+  bankAccounts = signal<IBankAccountRef[]>([]);
   showDeleteConfirm = signal(false);
   deletingExpense = signal<IExpense | null>(null);
   saving = signal(false);
@@ -282,6 +315,7 @@ export class ExpensesComponent implements OnInit {
   formCategoryUuid = '';
   formPaymentType = 'Cash';
   formChequeRef = '';
+  formMobileTxId = '';
   formDescription = '';
   newCategoryName = '';
 
@@ -312,6 +346,14 @@ export class ExpensesComponent implements OnInit {
     if (!this.expenseStore.initialized()) {
       this.expenseStore.loadAll();
     }
+    this.loadBankAccounts();
+  }
+
+  private async loadBankAccounts(): Promise<void> {
+    const bizUuid = this.authStore.activeBusiness()?.uuid;
+    if (!bizUuid) return;
+    const docs = await this.pouchDb.findByBusiness<IBankAccountRef>(ETables.BANK_ACCOUNT, bizUuid);
+    this.bankAccounts.set(docs);
   }
 
   getCategoryName(uuid: string | null): string {
@@ -325,6 +367,7 @@ export class ExpensesComponent implements OnInit {
     this.formCategoryUuid = '';
     this.formPaymentType = 'Cash';
     this.formChequeRef = '';
+    this.formMobileTxId = '';
     this.formDescription = '';
     this.formItems.set([]);
     this.formError.set('');
@@ -415,16 +458,24 @@ export class ExpensesComponent implements OnInit {
       return;
     }
 
+    if (['bKash', 'Nagad', 'Rocket'].includes(this.formPaymentType) && !this.formMobileTxId.trim()) {
+      this.formError.set('Transaction ID is required for mobile banking payments');
+      return;
+    }
+
     this.saving.set(true);
     this.formError.set('');
 
     const items = this.formItems();
+    const isBankPayment = this.formPaymentType.startsWith('Bank:');
     const data: Partial<IExpense> = {
       category_uuid: this.formCategoryUuid || null,
       expense_date: new Date(this.formDate).getTime(),
       description: this.formDescription.trim() || null,
-      payment_type: this.formPaymentType,
+      payment_type: isBankPayment ? 'Bank' : this.formPaymentType,
       cheque_ref_no: this.formChequeRef.trim() || null,
+      bank_account_uuid: isBankPayment ? this.formPaymentType.split(':')[1] : null,
+      mobile_tx_id: this.formMobileTxId.trim() || null,
       total_amount: this.formTotal(),
       total_quantity: items.reduce((s, i) => s + i.quantity, 0),
     };

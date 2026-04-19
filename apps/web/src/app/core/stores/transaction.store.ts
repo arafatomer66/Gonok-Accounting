@@ -198,6 +198,8 @@ export const TransactionStore = signalStore(
           order_number: data.order_number ?? generateInvoiceNo(type),
           payment_type: data.payment_type ?? null,
           cheque_ref_no: data.cheque_ref_no ?? null,
+          bank_account_uuid: data.bank_account_uuid ?? null,
+          mobile_tx_id: data.mobile_tx_id ?? null,
           items: [],
           discount: data.discount ?? 0,
           total_amount: data.total_amount ?? 0,
