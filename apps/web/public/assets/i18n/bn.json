@@ -90,7 +90,10 @@
     "branches": "শাখা সমূহ",
     "backup": "ব্যাকআপ ও রিস্টোর",
     "activity_log": "কার্যক্রম লগ",
-    "pos": "পিওএস"
+    "pos": "পিওএস",
+    "quotations": "কোটেশন",
+    "recurring_expenses": "পুনরাবৃত্ত খরচ",
+    "payroll": "বেতন"
   },
   "dashboard": {
     "total_sales": "মোট বিক্রয়",
@@ -273,6 +276,56 @@
     "round_total": "মোট গোলাকার",
     "show_company_name": "কোম্পানির নাম দেখান",
     "show_company_logo": "কোম্পানির লোগো দেখান"
+  },
+  "quotation": {
+    "title": "কোটেশন / এস্টিমেট",
+    "new": "নতুন কোটেশন",
+    "edit": "কোটেশন সম্পাদনা",
+    "quotation_no": "কোটেশন নং",
+    "party": "পার্টি",
+    "valid_until": "মেয়াদ",
+    "status": "অবস্থা",
+    "convert": "বিক্রয়ে রূপান্তর",
+    "change_status": "অবস্থা পরিবর্তন",
+    "notes": "নোটস",
+    "convert_success": "কোটেশন সফলভাবে বিক্রয়ে রূপান্তরিত হয়েছে"
+  },
+  "recurring": {
+    "title": "পুনরাবৃত্ত খরচ",
+    "new": "নতুন পুনরাবৃত্ত খরচ",
+    "edit": "পুনরাবৃত্ত খরচ সম্পাদনা",
+    "frequency": "পুনরাবৃত্তি",
+    "next_due": "পরবর্তী তারিখ",
+    "last_generated": "সর্বশেষ তৈরি",
+    "start_date": "শুরুর তারিখ",
+    "payment_type": "পেমেন্ট ধরন",
+    "category": "ক্যাটাগরি",
+    "active": "সক্রিয়",
+    "overdue": "বকেয়া",
+    "monthly_total": "মাসিক মোট"
+  },
+  "payroll": {
+    "title": "বেতন",
+    "employees": "কর্মচারী",
+    "add_employee": "কর্মচারী যোগ করুন",
+    "edit_employee": "কর্মচারী সম্পাদনা",
+    "designation": "পদবী",
+    "department": "বিভাগ",
+    "join_date": "যোগদানের তারিখ",
+    "base_salary": "মূল বেতন",
+    "salary_sheet": "বেতন শীট",
+    "generate_sheet": "শীট তৈরি করুন",
+    "bonus": "বোনাস",
+    "deduction": "কর্তন",
+    "advance": "অগ্রিম",
+    "net_salary": "নেট বেতন",
+    "pay": "প্রদান",
+    "pay_all": "সব প্রদান",
+    "history": "ইতিহাস",
+    "period": "সময়কাল",
+    "paid_date": "প্রদানের তারিখ",
+    "payment_type": "পেমেন্ট ধরন",
+    "total_monthly": "মোট মাসিক বেতন"
   },
   "sync": {
     "synced": "সিঙ্ক হয়েছে",

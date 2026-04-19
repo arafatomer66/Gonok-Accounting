@@ -1,0 +1,104 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.status-tabs {
+  display: flex;
+  gap: $space-2;
+  margin-bottom: $space-5;
+  flex-wrap: wrap;
+}
+
+.status-tab {
+  padding: $space-2 $space-4;
+  border: 1px solid $color-border;
+  border-radius: $radius-full;
+  background: transparent;
+  cursor: pointer;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  transition: all $transition-fast;
+
+  &--active {
+    background: $color-primary;
+    color: white;
+    border-color: $color-primary;
+  }
+}
+
+.badge--draft { background: $color-gray-100; color: $color-gray-600; }
+.badge--sent { background: $color-info-light; color: $color-info; }
+.badge--accepted { background: $color-success-light; color: $color-success; }
+.badge--converted { background: #dbeafe; color: #1d4ed8; }
+.badge--rejected { background: $color-danger-light; color: $color-danger; }
+
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.text-muted { color: $color-text-secondary; }
+.text-danger { color: $color-danger; }
+.font-medium { font-weight: $font-weight-medium; }
+
+.action-btns {
+  display: flex;
+  gap: $space-1;
+  flex-wrap: wrap;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $space-4;
+  margin-bottom: $space-4;
+}
+
+.items-heading {
+  margin: $space-4 0 $space-2;
+  font-size: $font-size-base;
+}
+
+.item-add-row {
+  display: flex;
+  gap: $space-2;
+  margin-bottom: $space-3;
+}
+
+.inline-input {
+  width: 80px;
+  padding: $space-1 $space-2;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+}
+
+.table--sm {
+  font-size: $font-size-sm;
+  th, td { padding: $space-2 $space-3; }
+}
+
+.form-total {
+  text-align: right;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  padding: $space-3 0;
+  border-top: 2px solid $color-border;
+  margin-top: $space-3;
+}
+
+.status-options {
+  display: flex;
+  gap: $space-2;
+  margin-top: $space-4;
+}
+
+.status-option-btn {
+  flex: 1;
+  text-transform: capitalize;
+}
+
+.btn--outline {
+  border: 2px solid $color-border;
+  background: transparent;
+  border-radius: $radius-lg;
+  padding: $space-2 $space-4;
+  cursor: pointer;
+  font-weight: $font-weight-medium;
+  &:hover { border-color: $color-primary; color: $color-primary; }
+}

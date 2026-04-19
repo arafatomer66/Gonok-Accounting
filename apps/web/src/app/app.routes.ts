@@ -198,6 +198,27 @@ export const appRoutes: Route[] = [
             (m) => m.BranchesComponent,
           ),
       },
+      {
+        path: 'quotations',
+        loadComponent: () =>
+          import('./features/quotations/quotations.component').then(
+            (m) => m.QuotationsComponent,
+          ),
+      },
+      {
+        path: 'recurring-expenses',
+        loadComponent: () =>
+          import(
+            './features/recurring-expenses/recurring-expenses.component'
+          ).then((m) => m.RecurringExpensesComponent),
+      },
+      {
+        path: 'payroll',
+        loadComponent: () =>
+          import('./features/payroll/payroll.component').then(
+            (m) => m.PayrollComponent,
+          ),
+      },
     ],
   },
 

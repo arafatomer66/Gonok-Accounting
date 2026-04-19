@@ -90,7 +90,10 @@
     "branches": "Branches",
     "backup": "Backup & Restore",
     "activity_log": "Activity Log",
-    "pos": "POS"
+    "pos": "POS",
+    "quotations": "Quotations",
+    "recurring_expenses": "Recurring Expenses",
+    "payroll": "Payroll"
   },
   "dashboard": {
     "total_sales": "Total Sales",
@@ -273,6 +276,56 @@
     "round_total": "Round Total",
     "show_company_name": "Show Company Name",
     "show_company_logo": "Show Company Logo"
+  },
+  "quotation": {
+    "title": "Quotations / Estimates",
+    "new": "New Quotation",
+    "edit": "Edit Quotation",
+    "quotation_no": "Quotation No",
+    "party": "Party",
+    "valid_until": "Valid Until",
+    "status": "Status",
+    "convert": "Convert to Sale",
+    "change_status": "Change Status",
+    "notes": "Notes",
+    "convert_success": "Quotation converted to sale successfully"
+  },
+  "recurring": {
+    "title": "Recurring Expenses",
+    "new": "New Recurring Expense",
+    "edit": "Edit Recurring Expense",
+    "frequency": "Frequency",
+    "next_due": "Next Due",
+    "last_generated": "Last Generated",
+    "start_date": "Start Date",
+    "payment_type": "Payment Type",
+    "category": "Category",
+    "active": "Active",
+    "overdue": "Overdue",
+    "monthly_total": "Monthly Total"
+  },
+  "payroll": {
+    "title": "Payroll",
+    "employees": "Employees",
+    "add_employee": "Add Employee",
+    "edit_employee": "Edit Employee",
+    "designation": "Designation",
+    "department": "Department",
+    "join_date": "Join Date",
+    "base_salary": "Base Salary",
+    "salary_sheet": "Salary Sheet",
+    "generate_sheet": "Generate Sheet",
+    "bonus": "Bonus",
+    "deduction": "Deduction",
+    "advance": "Advance",
+    "net_salary": "Net Salary",
+    "pay": "Pay",
+    "pay_all": "Pay All",
+    "history": "History",
+    "period": "Period",
+    "paid_date": "Paid Date",
+    "payment_type": "Payment Type",
+    "total_monthly": "Total Monthly Payroll"
   },
   "sync": {
     "synced": "Synced",

@@ -8,3 +8,6 @@ export * from './settings.model.js';
 export * from './user.model.js';
 export * from './subscription.model.js';
 export * from './balance-sheet.model.js';
+export * from './quotation.model.js';
+export * from './recurring-expense.model.js';
+export * from './payroll.model.js';

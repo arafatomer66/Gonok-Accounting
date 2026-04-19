@@ -17,4 +17,9 @@ export enum ETables {
   CASH_ADJUSTMENT = 'cash_adjustment',
   ACTIVITY_LOG = 'activity_log',
   BRANCH = 'branch',
+  QUOTATION = 'quotation',
+  QUOTATION_ITEM = 'quotation_item',
+  RECURRING_EXPENSE = 'recurring_expense',
+  EMPLOYEE = 'employee',
+  SALARY = 'salary',
 }

@@ -99,6 +99,7 @@ export class SidebarComponent {
       titleKey: 'menu.sales_section',
       items: [
         { labelKey: 'menu.sales', icon: '🛒', route: '/sales' },
+        { labelKey: 'menu.quotations', icon: '📄', route: '/quotations' },
         { labelKey: 'menu.sales_return', icon: '↩️', route: '/sales-return' },
         { labelKey: 'menu.payment_in', icon: '💰', route: '/payment-in' },
       ],
@@ -117,6 +118,8 @@ export class SidebarComponent {
         { labelKey: 'menu.parties', icon: '👥', route: '/parties' },
         { labelKey: 'menu.products', icon: '📋', route: '/products' },
         { labelKey: 'menu.expenses', icon: '💳', route: '/expenses' },
+        { labelKey: 'menu.recurring_expenses', icon: '🔄', route: '/recurring-expenses' },
+        { labelKey: 'menu.payroll', icon: '💼', route: '/payroll' },
       ],
     },
     {

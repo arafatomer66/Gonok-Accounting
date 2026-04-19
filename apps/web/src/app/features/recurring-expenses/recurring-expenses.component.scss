@@ -1,0 +1,82 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.page-header__actions {
+  display: flex;
+  gap: $space-2;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $space-4;
+  margin-bottom: $space-5;
+}
+
+.summary-card {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-xl;
+  padding: $space-5;
+
+  &__label {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    margin-bottom: $space-1;
+  }
+
+  &__value {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+
+    &--danger { color: $color-danger; }
+  }
+}
+
+.row-overdue {
+  background: rgba($color-danger, 0.03);
+}
+
+.overdue-badge {
+  display: inline-block;
+  font-size: $font-size-xs;
+  color: $color-danger;
+  font-weight: $font-weight-semibold;
+  margin-left: $space-1;
+}
+
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.text-muted { color: $color-text-secondary; }
+.text-danger { color: $color-danger; }
+.font-medium { font-weight: $font-weight-medium; }
+
+.action-btns {
+  display: flex;
+  gap: $space-1;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-4;
+  margin-bottom: $space-4;
+}
+
+.btn--accent {
+  background: $color-warning;
+  color: white;
+  border: none;
+  border-radius: $radius-lg;
+  padding: $space-2 $space-4;
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  &:hover { opacity: 0.9; }
+}
+
+.success-msg {
+  color: $color-success;
+  font-size: $font-size-sm;
+  margin-top: $space-4;
+  font-weight: $font-weight-medium;
+}

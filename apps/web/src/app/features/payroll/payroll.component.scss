@@ -1,0 +1,78 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.payroll-tabs {
+  display: flex;
+  gap: $space-2;
+  margin-bottom: $space-5;
+}
+
+.payroll-tab {
+  padding: $space-2 $space-5;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  background: transparent;
+  cursor: pointer;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-sm;
+  transition: all $transition-fast;
+
+  &--active {
+    background: $color-primary;
+    color: white;
+    border-color: $color-primary;
+  }
+}
+
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-4;
+}
+
+.summary-inline {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  strong { color: $color-text; font-size: $font-size-lg; }
+}
+
+.month-selector {
+  display: flex;
+  gap: $space-2;
+  select { width: 160px; }
+}
+
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.text-muted { color: $color-text-secondary; }
+.text-danger { color: $color-danger; }
+.text-sm { font-size: $font-size-sm; }
+.font-medium { font-weight: $font-weight-medium; }
+
+.action-btns {
+  display: flex;
+  gap: $space-1;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-4;
+  margin-bottom: $space-4;
+}
+
+.inline-input {
+  width: 80px;
+  padding: $space-1 $space-2;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+  -moz-appearance: textfield;
+  &::-webkit-inner-spin-button { -webkit-appearance: none; }
+}
+
+.total-row {
+  background: $color-gray-50;
+  font-weight: $font-weight-semibold;
+  td { border-top: 2px solid $color-border; }
+}
