@@ -258,7 +258,7 @@ for (let i = 0; i < 15; i++) {
 
   txSales.push({
     uuid: txUuid, table_type: 'transaction', business_uuid: bizUuid, branch_uuid: null,
-    type: 'sale', party_uuid: party.uuid, transaction_date: date,
+    type: 'sales', party_uuid: party.uuid, transaction_date: date,
     transaction_mode: null, description: null,
     order_number: null, payment_type: partyIdx === 0 ? 'cash' : (i % 3 === 0 ? 'bkash' : 'cash'),
     cheque_ref_no: null, bank_account_uuid: null, mobile_tx_id: null,
@@ -272,14 +272,14 @@ for (let i = 0; i < 15; i++) {
 
   txItems.push({
     uuid: item1Uuid, table_type: 'transaction_item', business_uuid: bizUuid, branch_uuid: null,
-    party_uuid: party.uuid, transaction_uuid: txUuid, transaction_type: 'sale',
+    party_uuid: party.uuid, transaction_uuid: txUuid, transaction_type: 'sales',
     item_uuid: prod1.uuid, purchase_price: prod1.purchase_price, sales_price: prod1.sales_price,
     item_wise_tax: 0, total_tax: 0, quantity: qty1, transaction_date: date,
     created_at: date, updated_at: date, created_by: null, updated_by: null,
   });
   txItems.push({
     uuid: item2Uuid, table_type: 'transaction_item', business_uuid: bizUuid, branch_uuid: null,
-    party_uuid: party.uuid, transaction_uuid: txUuid, transaction_type: 'sale',
+    party_uuid: party.uuid, transaction_uuid: txUuid, transaction_type: 'sales',
     item_uuid: prod2.uuid, purchase_price: prod2.purchase_price, sales_price: prod2.sales_price,
     item_wise_tax: 0, total_tax: 0, quantity: qty2, transaction_date: date,
     created_at: date, updated_at: date, created_by: null, updated_by: null,
