@@ -118,6 +118,14 @@ export class SidebarComponent {
       ],
     },
     {
+      title: 'Finance',
+      items: [
+        { label: 'Due List', icon: '📑', route: '/due-list' },
+        { label: 'Cash Adjustment', icon: '💵', route: '/cash-adjustment' },
+        { label: 'Bank', icon: '🏦', route: '/bank' },
+      ],
+    },
+    {
       title: 'Others',
       items: [
         { label: 'Reports', icon: '📈', route: '/reports' },

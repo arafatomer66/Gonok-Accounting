@@ -12,4 +12,7 @@ export enum ETables {
   SETTINGS = 'settings',
   UNIT = 'unit',
   BUSINESS = 'business',
+  BANK_ACCOUNT = 'bank_account',
+  BANK_TRANSACTION = 'bank_transaction',
+  CASH_ADJUSTMENT = 'cash_adjustment',
 }

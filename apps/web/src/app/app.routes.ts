@@ -108,6 +108,27 @@ export const appRoutes: Route[] = [
           ),
       },
       {
+        path: 'due-list',
+        loadComponent: () =>
+          import('./features/due-list/due-list.component').then(
+            (m) => m.DueListComponent,
+          ),
+      },
+      {
+        path: 'cash-adjustment',
+        loadComponent: () =>
+          import('./features/cash-adjustment/cash-adjustment.component').then(
+            (m) => m.CashAdjustmentComponent,
+          ),
+      },
+      {
+        path: 'bank',
+        loadComponent: () =>
+          import('./features/bank/bank.component').then(
+            (m) => m.BankComponent,
+          ),
+      },
+      {
         path: 'reports',
         loadChildren: () =>
           import('./features/reports/reports.routes').then(
