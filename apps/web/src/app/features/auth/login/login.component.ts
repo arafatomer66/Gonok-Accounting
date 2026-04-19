@@ -26,12 +26,17 @@ import { ETables } from '@org/shared-types';
               <label class="form-label">Phone Number</label>
               <input
                 class="form-input"
+                [class.form-input--error]="phoneError()"
                 type="tel"
                 [(ngModel)]="phone"
                 name="phone"
                 placeholder="01XXXXXXXXX"
+                maxlength="11"
                 required
               />
+              @if (phoneError()) {
+                <span class="form-error">{{ phoneError() }}</span>
+              }
             </div>
             @if (error()) {
               <p class="form-error">{{ error() }}</p>
@@ -46,6 +51,7 @@ import { ETables } from '@org/shared-types';
               <label class="form-label">Enter OTP sent to {{ phone }}</label>
               <input
                 class="form-input"
+                [class.form-input--error]="otpError()"
                 type="text"
                 [(ngModel)]="otp"
                 name="otp"
@@ -53,6 +59,9 @@ import { ETables } from '@org/shared-types';
                 maxlength="6"
                 required
               />
+              @if (otpError()) {
+                <span class="form-error">{{ otpError() }}</span>
+              }
             </div>
             @if (error()) {
               <p class="form-error">{{ error() }}</p>
@@ -146,11 +155,22 @@ export class LoginComponent {
   otpSent = signal(false);
   loading = signal(false);
   error = signal('');
+  phoneError = signal('');
+  otpError = signal('');
 
   requestOtp(): void {
-    if (!this.phone) return;
-    this.loading.set(true);
+    this.phoneError.set('');
     this.error.set('');
+    const phone = this.phone.trim();
+    if (!phone) {
+      this.phoneError.set('Phone number is required');
+      return;
+    }
+    if (!/^01[3-9]\d{8}$/.test(phone)) {
+      this.phoneError.set('Must be a valid number (01XXXXXXXXX)');
+      return;
+    }
+    this.loading.set(true);
 
     this.authApi.login(this.phone).subscribe({
       next: () => {
@@ -165,9 +185,18 @@ export class LoginComponent {
   }
 
   verifyOtp(): void {
-    if (!this.otp) return;
-    this.loading.set(true);
+    this.otpError.set('');
     this.error.set('');
+    const otp = this.otp.trim();
+    if (!otp) {
+      this.otpError.set('OTP is required');
+      return;
+    }
+    if (!/^\d{6}$/.test(otp)) {
+      this.otpError.set('Must be exactly 6 digits');
+      return;
+    }
+    this.loading.set(true);
 
     this.authApi.verifyOtp(this.phone, this.otp).subscribe({
       next: async (result) => {

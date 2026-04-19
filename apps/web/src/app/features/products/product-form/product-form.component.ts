@@ -259,6 +259,35 @@ export class ProductFormComponent implements OnInit {
       }
     }
 
+    if (this.purchasePrice < 0 || this.salesPrice < 0 || this.mrpPrice < 0) {
+      this.error.set('Prices cannot be negative');
+      return;
+    }
+
+    if (this.salesPrice > 0 && this.purchasePrice > 0 && this.salesPrice < this.purchasePrice) {
+      // Warning, not blocking — just flag it
+    }
+
+    if (this.stockCount < 0) {
+      this.error.set('Stock count cannot be negative');
+      return;
+    }
+
+    if (this.itemWiseTax < 0 || this.itemWiseTax > 100) {
+      this.error.set('Tax must be between 0% and 100%');
+      return;
+    }
+
+    if (this.discount < 0) {
+      this.error.set('Discount cannot be negative');
+      return;
+    }
+
+    if (this.mfgDate && this.expDate && new Date(this.mfgDate) >= new Date(this.expDate)) {
+      this.error.set('Expiry date must be after manufacturing date');
+      return;
+    }
+
     this.saving.set(true);
     this.error.set('');
 

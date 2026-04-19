@@ -193,12 +193,33 @@ export class UsersComponent implements OnInit {
   }
 
   async saveUser(): Promise<void> {
-    if (!this.formName.trim()) {
+    const name = this.formName.trim();
+    const phone = this.formPhone.trim();
+
+    if (!name) {
       this.formError.set('Name is required');
       return;
     }
-    if (!this.formPhone.trim()) {
-      this.formError.set('Phone is required');
+    if (name.length < 2) {
+      this.formError.set('Name must be at least 2 characters');
+      return;
+    }
+    if (!phone) {
+      this.formError.set('Phone number is required');
+      return;
+    }
+    if (!/^01[3-9]\d{8}$/.test(phone)) {
+      this.formError.set('Enter a valid Bangladesh phone number (01XXXXXXXXX)');
+      return;
+    }
+
+    // Check duplicate phone
+    const editing = this.editingUser();
+    const phoneDup = this.users().some(
+      (u) => u.uuid !== editing?.uuid && u.phone === phone,
+    );
+    if (phoneDup) {
+      this.formError.set('A user with this phone number already exists');
       return;
     }
 
@@ -208,7 +229,6 @@ export class UsersComponent implements OnInit {
     this.saving.set(true);
     this.formError.set('');
 
-    const editing = this.editingUser();
     const uuid = editing?.uuid || crypto.randomUUID();
     const now = Date.now();
 

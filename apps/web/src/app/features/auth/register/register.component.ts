@@ -155,7 +155,24 @@ export class RegisterComponent {
   error = signal('');
 
   register(): void {
-    if (!this.name || !this.phone) return;
+    const name = this.name.trim();
+    const phone = this.phone.trim();
+    if (!name) {
+      this.error.set('Name is required');
+      return;
+    }
+    if (name.length < 2) {
+      this.error.set('Name must be at least 2 characters');
+      return;
+    }
+    if (!phone) {
+      this.error.set('Phone number is required');
+      return;
+    }
+    if (!/^01[3-9]\d{8}$/.test(phone)) {
+      this.error.set('Enter a valid Bangladesh phone number (01XXXXXXXXX)');
+      return;
+    }
     this.loading.set(true);
     this.error.set('');
 
@@ -172,7 +189,15 @@ export class RegisterComponent {
   }
 
   verifyOtp(): void {
-    if (!this.otp) return;
+    const otp = this.otp.trim();
+    if (!otp) {
+      this.error.set('OTP is required');
+      return;
+    }
+    if (!/^\d{6}$/.test(otp)) {
+      this.error.set('OTP must be exactly 6 digits');
+      return;
+    }
     this.loading.set(true);
     this.error.set('');
 

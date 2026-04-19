@@ -357,12 +357,26 @@ export class TransactionFormComponent implements OnInit {
   }
 
   addLine(): void {
-    if (!this.newItemUuid) return;
+    if (!this.newItemUuid) {
+      this.error.set('Select a product to add');
+      return;
+    }
     const product = this.catalogStore
       .products()
       .find((p) => p.uuid === this.newItemUuid);
     if (!product) return;
 
+    if (this.newQty <= 0) {
+      this.error.set('Quantity must be greater than zero');
+      return;
+    }
+
+    if (this.newPrice < 0) {
+      this.error.set('Price cannot be negative');
+      return;
+    }
+
+    this.error.set('');
     const qty = this.newQty || 1;
     const isSales = this.isSalesType();
     const price =
@@ -407,6 +421,19 @@ export class TransactionFormComponent implements OnInit {
       return;
     }
 
+    if (!this.txDate) {
+      this.error.set('Transaction date is required');
+      return;
+    }
+
+    const txDateObj = new Date(this.txDate);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    if (txDateObj > today) {
+      this.error.set('Transaction date cannot be in the future');
+      return;
+    }
+
     if (!this.isPayment() && this.itemLines().length === 0) {
       this.error.set('At least one item is required');
       return;
@@ -414,6 +441,26 @@ export class TransactionFormComponent implements OnInit {
 
     if (this.isPayment() && this.paidAmount <= 0) {
       this.error.set('Amount must be greater than zero');
+      return;
+    }
+
+    if (!this.isPayment() && this.paidAmount < 0) {
+      this.error.set('Paid amount cannot be negative');
+      return;
+    }
+
+    if (this.discount < 0) {
+      this.error.set('Discount cannot be negative');
+      return;
+    }
+
+    if (!this.isPayment() && this.discount > this.subtotal() + this.totalTax()) {
+      this.error.set('Discount cannot exceed the subtotal');
+      return;
+    }
+
+    if (this.paymentType === EPaymentType.CHEQUE && !this.chequeRefNo.trim()) {
+      this.error.set('Cheque reference number is required for cheque payments');
       return;
     }
 

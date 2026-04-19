@@ -338,7 +338,18 @@ export class ExpensesComponent implements OnInit {
 
   async addCategory(): Promise<void> {
     const name = this.newCategoryName.trim();
-    if (!name) return;
+    if (!name) {
+      this.formError.set('Category name is required');
+      return;
+    }
+    const exists = this.expenseStore.expenseCategories().some(
+      (c) => (c.name || '').toLowerCase() === name.toLowerCase(),
+    );
+    if (exists) {
+      this.formError.set('This category already exists');
+      return;
+    }
+    this.formError.set('');
     const cat = await this.expenseStore.addCategory(name);
     this.formCategoryUuid = cat.uuid;
     this.newCategoryName = '';
@@ -347,9 +358,21 @@ export class ExpensesComponent implements OnInit {
 
   addItem(): void {
     const name = this.newItemName.trim();
-    if (!name) return;
-    const rate = this.newItemRate || 0;
-    const qty = this.newItemQty || 1;
+    if (!name) {
+      this.formError.set('Item name is required');
+      return;
+    }
+    if (this.newItemRate <= 0) {
+      this.formError.set('Rate must be greater than zero');
+      return;
+    }
+    if (this.newItemQty <= 0) {
+      this.formError.set('Quantity must be greater than zero');
+      return;
+    }
+    this.formError.set('');
+    const rate = this.newItemRate;
+    const qty = this.newItemQty;
     this.formItems.update((items) => [
       ...items,
       { item_name: name, rate, quantity: qty, amount: rate * qty },
@@ -366,6 +389,29 @@ export class ExpensesComponent implements OnInit {
   async saveExpense(): Promise<void> {
     if (this.formItems().length === 0) {
       this.formError.set('Add at least one item');
+      return;
+    }
+
+    if (!this.formDate) {
+      this.formError.set('Date is required');
+      return;
+    }
+
+    const expDate = new Date(this.formDate);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    if (expDate > today) {
+      this.formError.set('Expense date cannot be in the future');
+      return;
+    }
+
+    if (!this.formCategoryUuid) {
+      this.formError.set('Please select an expense category');
+      return;
+    }
+
+    if (this.formPaymentType === 'Cheque' && !this.formChequeRef.trim()) {
+      this.formError.set('Cheque reference number is required for cheque payments');
       return;
     }
 

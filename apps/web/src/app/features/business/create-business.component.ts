@@ -142,8 +142,20 @@ export class CreateBusinessComponent {
   error = signal('');
 
   createBusiness(): void {
-    if (!this.nameEn && !this.nameBn) {
+    const nameEn = this.nameEn.trim();
+    const nameBn = this.nameBn.trim();
+    const phone = this.phone.trim();
+
+    if (!nameEn && !nameBn) {
       this.error.set('At least one business name is required');
+      return;
+    }
+    if (nameEn && nameEn.length < 2) {
+      this.error.set('Business name must be at least 2 characters');
+      return;
+    }
+    if (phone && !/^01[3-9]\d{8}$/.test(phone)) {
+      this.error.set('Enter a valid Bangladesh phone number (01XXXXXXXXX)');
       return;
     }
 
