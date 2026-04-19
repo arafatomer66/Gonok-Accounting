@@ -93,7 +93,8 @@
     "pos": "পিওএস",
     "quotations": "কোটেশন",
     "recurring_expenses": "পুনরাবৃত্ত খরচ",
-    "payroll": "বেতন"
+    "payroll": "বেতন",
+    "deliveries": "ডেলিভারি"
   },
   "dashboard": {
     "total_sales": "মোট বিক্রয়",
@@ -326,6 +327,30 @@
     "paid_date": "প্রদানের তারিখ",
     "payment_type": "পেমেন্ট ধরন",
     "total_monthly": "মোট মাসিক বেতন"
+  },
+  "delivery": {
+    "title": "ডেলিভারি / চালান",
+    "new": "নতুন চালান",
+    "edit": "চালান সম্পাদনা",
+    "challan_no": "চালান নং",
+    "party": "পার্টি",
+    "driver": "ড্রাইভার",
+    "items_count": "আইটেম (পরিমাণ)",
+    "status_label": "অবস্থা",
+    "pending": "অপেক্ষমাণ",
+    "dispatched": "প্রেরিত",
+    "in_transit": "পথে আছে",
+    "delivered_count": "পৌঁছেছে",
+    "empty": "কোন ডেলিভারি নেই",
+    "from_sale": "বিক্রয়ের সাথে সংযুক্ত",
+    "standalone": "স্বতন্ত্র চালান",
+    "address": "ডেলিভারি ঠিকানা",
+    "driver_info": "ড্রাইভার তথ্য",
+    "driver_name": "ড্রাইভারের নাম",
+    "driver_phone": "ড্রাইভারের ফোন",
+    "vehicle_no": "গাড়ি নম্বর",
+    "items_heading": "আইটেম সমূহ",
+    "notes": "নোটস"
   },
   "sync": {
     "synced": "সিঙ্ক হয়েছে",

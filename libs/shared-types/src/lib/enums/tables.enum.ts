@@ -22,4 +22,6 @@ export enum ETables {
   RECURRING_EXPENSE = 'recurring_expense',
   EMPLOYEE = 'employee',
   SALARY = 'salary',
+  DELIVERY = 'delivery',
+  DELIVERY_ITEM = 'delivery_item',
 }

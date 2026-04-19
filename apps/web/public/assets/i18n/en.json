@@ -93,7 +93,8 @@
     "pos": "POS",
     "quotations": "Quotations",
     "recurring_expenses": "Recurring Expenses",
-    "payroll": "Payroll"
+    "payroll": "Payroll",
+    "deliveries": "Deliveries"
   },
   "dashboard": {
     "total_sales": "Total Sales",
@@ -326,6 +327,30 @@
     "paid_date": "Paid Date",
     "payment_type": "Payment Type",
     "total_monthly": "Total Monthly Payroll"
+  },
+  "delivery": {
+    "title": "Deliveries / Challan",
+    "new": "New Challan",
+    "edit": "Edit Challan",
+    "challan_no": "Challan No",
+    "party": "Party",
+    "driver": "Driver",
+    "items_count": "Items (Qty)",
+    "status_label": "Status",
+    "pending": "Pending",
+    "dispatched": "Dispatched",
+    "in_transit": "In Transit",
+    "delivered_count": "Delivered",
+    "empty": "No deliveries yet",
+    "from_sale": "Link to Sale",
+    "standalone": "Standalone Challan",
+    "address": "Delivery Address",
+    "driver_info": "Driver Info",
+    "driver_name": "Driver Name",
+    "driver_phone": "Driver Phone",
+    "vehicle_no": "Vehicle No",
+    "items_heading": "Items",
+    "notes": "Notes"
   },
   "sync": {
     "synced": "Synced",

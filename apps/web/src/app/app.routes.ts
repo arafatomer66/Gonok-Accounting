@@ -219,6 +219,13 @@ export const appRoutes: Route[] = [
             (m) => m.PayrollComponent,
           ),
       },
+      {
+        path: 'deliveries',
+        loadComponent: () =>
+          import('./features/deliveries/deliveries.component').then(
+            (m) => m.DeliveriesComponent,
+          ),
+      },
     ],
   },
 

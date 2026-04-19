@@ -100,6 +100,7 @@ export class SidebarComponent {
       items: [
         { labelKey: 'menu.sales', icon: '🛒', route: '/sales' },
         { labelKey: 'menu.quotations', icon: '📄', route: '/quotations' },
+        { labelKey: 'menu.deliveries', icon: '🚚', route: '/deliveries' },
         { labelKey: 'menu.sales_return', icon: '↩️', route: '/sales-return' },
         { labelKey: 'menu.payment_in', icon: '💰', route: '/payment-in' },
       ],

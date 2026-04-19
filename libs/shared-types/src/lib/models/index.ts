@@ -11,3 +11,4 @@ export * from './balance-sheet.model.js';
 export * from './quotation.model.js';
 export * from './recurring-expense.model.js';
 export * from './payroll.model.js';
+export * from './delivery.model.js';
