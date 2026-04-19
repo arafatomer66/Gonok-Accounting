@@ -1,8 +1,11 @@
-import { Component, inject, computed, OnInit, AfterViewInit, ViewChild, ElementRef, effect } from '@angular/core';
+import { Component, inject, computed, signal, OnInit, AfterViewInit, ViewChild, ElementRef, effect } from '@angular/core';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { TransactionStore } from '../../core/stores/transaction.store';
 import { CatalogStore } from '../../core/stores/catalog.store';
 import { ExpenseStore } from '../../core/stores/expense.store';
+import { AuthStore } from '../../core/stores/auth.store';
+import { PouchDbService } from '../../core/services/pouchdb.service';
+import { ITransactionItem, ETables } from '@org/shared-types';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -159,8 +162,12 @@ Chart.register(...registerables);
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
   private transactionStore = inject(TransactionStore);
+  private authStore = inject(AuthStore);
+  private pouchDb = inject(PouchDbService);
   catalogStore = inject(CatalogStore);
   expenseStore = inject(ExpenseStore);
+
+  salesItems = signal<ITransactionItem[]>([]);
 
   @ViewChild('salesChart') salesChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('revenueChart') revenueChartRef!: ElementRef<HTMLCanvasElement>;
@@ -218,16 +225,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   topProducts = computed(() => {
     const qtyMap = new Map<string, { name: string; qty: number }>();
-    for (const tx of this.transactionStore.sales()) {
-      for (const item of tx.items || []) {
-        if (!item.item_uuid) continue;
-        const existing = qtyMap.get(item.item_uuid);
-        if (existing) {
-          existing.qty += item.quantity || 0;
-        } else {
-          const product = this.catalogStore.products().find((p) => p.uuid === item.item_uuid);
-          qtyMap.set(item.item_uuid, { name: product?.name || 'Unknown', qty: item.quantity || 0 });
-        }
+    for (const item of this.salesItems()) {
+      if (!item.item_uuid) continue;
+      const existing = qtyMap.get(item.item_uuid);
+      if (existing) {
+        existing.qty += item.quantity || 0;
+      } else {
+        const product = this.catalogStore.products().find((p) => p.uuid === item.item_uuid);
+        qtyMap.set(item.item_uuid, { name: product?.name || 'Unknown', qty: item.quantity || 0 });
       }
     }
     return [...qtyMap.values()].sort((a, b) => b.qty - a.qty).slice(0, 5);
@@ -245,10 +250,16 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     if (!this.catalogStore.initialized()) this.catalogStore.loadAll();
     if (!this.transactionStore.initialized()) this.transactionStore.loadAll();
     if (!this.expenseStore.initialized()) this.expenseStore.loadAll();
+
+    const bizUuid = this.authStore.activeBusinessUuid();
+    if (bizUuid) {
+      const allItems = await this.pouchDb.findByBusiness<ITransactionItem>(ETables.TRANSACTION_ITEM, bizUuid);
+      this.salesItems.set(allItems.filter((i) => i.transaction_type === 'sales'));
+    }
   }
 
   ngAfterViewInit(): void {
