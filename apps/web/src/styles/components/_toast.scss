@@ -7,7 +7,7 @@
   z-index: 2000;
   display: flex;
   flex-direction: column;
-  gap: $space-2;
+  gap: $space-3;
 }
 
 .toast {
@@ -15,13 +15,14 @@
   align-items: center;
   gap: $space-3;
   padding: $space-3 $space-4;
-  border-radius: $radius-md;
+  border-radius: $radius-xl;
   background: $color-surface;
-  box-shadow: $shadow-md;
+  box-shadow: $shadow-lg;
   border-left: 4px solid;
   font-size: $font-size-sm;
-  animation: slide-in-right $transition-base;
-  min-width: 300px;
+  animation: slide-in-right $transition-slow;
+  min-width: 320px;
+  backdrop-filter: blur(8px);
 
   &--success { border-left-color: $color-success; }
   &--warning { border-left-color: $color-warning; }
@@ -31,16 +32,22 @@
   &__message {
     flex: 1;
     color: $color-gray-700;
+    font-weight: $font-weight-medium;
   }
 
   &__close {
     color: $color-gray-400;
     padding: $space-1;
-    &:hover { color: $color-gray-600; }
+    border-radius: $radius-md;
+    transition: all $transition-fast;
+    &:hover {
+      color: $color-gray-600;
+      background: $color-gray-100;
+    }
   }
 }
 
 @keyframes slide-in-right {
-  from { transform: translateX(100%); opacity: 0; }
+  from { transform: translateX(110%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }

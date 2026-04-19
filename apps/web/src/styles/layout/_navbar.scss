@@ -7,10 +7,11 @@
   right: 0;
   left: $sidebar-width;
   height: $navbar-height;
-  background: $color-surface;
+  background: rgba($color-surface, 0.85);
+  backdrop-filter: blur(12px) saturate(180%);
   border-bottom: 1px solid $color-border;
   @include flex-between;
-  padding: 0 $space-5;
+  padding: 0 $space-6;
   z-index: 90;
   transition: left $transition-slow;
 
@@ -31,16 +32,18 @@
   }
 
   &__title {
-    font-size: $font-size-md;
+    font-size: $font-size-lg;
     font-weight: $font-weight-semibold;
     color: $color-gray-800;
+    letter-spacing: $letter-spacing-tight;
   }
 
   &__menu-btn {
     display: none;
     padding: $space-2;
-    border-radius: $radius-md;
+    border-radius: $radius-lg;
     color: $color-gray-600;
+    transition: all $transition-fast;
     &:hover {
       background: $color-gray-100;
     }

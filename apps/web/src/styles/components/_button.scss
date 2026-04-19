@@ -7,15 +7,18 @@
   align-items: center;
   justify-content: center;
   gap: $space-2;
-  padding: $space-2 $space-4;
+  padding: 0.5rem 1rem;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
   line-height: $line-height-normal;
-  border-radius: $radius-md;
+  border-radius: $radius-lg;
   transition: all $transition-fast;
   white-space: nowrap;
   cursor: pointer;
   border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.01em;
 
   &:focus-visible {
     @include focus-ring;
@@ -30,19 +33,27 @@
   &--sm {
     padding: $space-1 $space-3;
     font-size: $font-size-sm;
+    border-radius: $radius-md;
   }
 
   &--lg {
     padding: $space-3 $space-6;
     font-size: $font-size-md;
+    border-radius: $radius-xl;
   }
 
   // Variants
   &--primary {
-    background: $color-primary;
+    background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
     color: $color-white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 3px rgba($color-primary, 0.2);
     &:hover:not(:disabled) {
-      background: $color-primary-dark;
+      box-shadow: 0 2px 8px rgba($color-primary, 0.35);
+      transform: translateY(-1px);
+    }
+    &:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba($color-primary, 0.2);
     }
   }
 
@@ -50,16 +61,24 @@
     background: $color-surface;
     color: $color-gray-700;
     border-color: $color-border;
+    box-shadow: $shadow-xs;
     &:hover:not(:disabled) {
       background: $color-gray-50;
+      border-color: $color-gray-300;
+      box-shadow: $shadow-sm;
     }
   }
 
   &--danger {
-    background: $color-danger;
+    background: linear-gradient(135deg, $color-danger 0%, color.adjust($color-danger, $lightness: -8%) 100%);
     color: $color-white;
+    box-shadow: 0 1px 3px rgba($color-danger, 0.2);
     &:hover:not(:disabled) {
-      background: color.adjust($color-danger, $lightness: -8%);
+      box-shadow: 0 2px 8px rgba($color-danger, 0.35);
+      transform: translateY(-1px);
+    }
+    &:active:not(:disabled) {
+      transform: translateY(0);
     }
   }
 
@@ -68,6 +87,7 @@
     color: $color-gray-600;
     &:hover:not(:disabled) {
       background: $color-gray-100;
+      color: $color-gray-800;
     }
   }
 
@@ -76,13 +96,13 @@
     color: $color-primary;
     padding: 0;
     &:hover:not(:disabled) {
-      text-decoration: underline;
+      color: $color-primary-dark;
     }
   }
 
   &--icon {
     padding: $space-2;
-    border-radius: $radius-md;
+    border-radius: $radius-lg;
   }
 
   &--block {

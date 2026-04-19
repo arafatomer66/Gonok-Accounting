@@ -16,27 +16,10 @@
 @use 'styles/layout/navbar';
 @use 'styles/layout/shell';
 
-// ─── Page header ─────────────────────────────────────
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-
-  &__title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #111827;
-    margin: 0;
-  }
-}
-
 // ─── Utility classes ─────────────────────────────────
 .text-right { text-align: right; }
 .text-center { text-align: center; }
-.text-muted { color: var(--color-text-secondary, #6b7280); }
+.text-muted { color: var(--color-text-secondary, #64748b); }
 .text-success { color: var(--color-success, #16a34a); }
 .text-danger { color: var(--color-danger, #dc2626); }
 .font-medium { font-weight: 500; }

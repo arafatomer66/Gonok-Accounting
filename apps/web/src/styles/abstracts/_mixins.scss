@@ -15,9 +15,10 @@
 // ─── Card ────────────────────────────────────────────
 @mixin card {
   background: $color-surface;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-xs;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-xs, $shadow-ring;
   border: 1px solid $color-border;
+  transition: box-shadow $transition-base;
 }
 
 // ─── Flex helpers ────────────────────────────────────
@@ -43,14 +44,14 @@
 // ─── Focus ring ──────────────────────────────────────
 @mixin focus-ring {
   outline: none;
-  box-shadow: 0 0 0 3px rgba($color-primary, 0.3);
+  box-shadow: 0 0 0 3px rgba($color-primary, 0.25);
 }
 
 // ─── Scrollbar ───────────────────────────────────────
 @mixin custom-scrollbar {
   &::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
   &::-webkit-scrollbar-track {
     background: transparent;
@@ -62,4 +63,10 @@
       background: $color-gray-400;
     }
   }
+}
+
+// ─── Glass effect ────────────────────────────────────
+@mixin glass {
+  background: rgba($color-surface, 0.8);
+  backdrop-filter: blur(12px) saturate(180%);
 }

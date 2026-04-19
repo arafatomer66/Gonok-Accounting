@@ -80,48 +80,56 @@ import { ETables } from '@org/shared-types';
       display: flex;
       align-items: center;
       justify-content: center;
-      background: $color-bg;
+      background: linear-gradient(135deg, #eff6ff 0%, #f1f5f9 50%, #ede9fe 100%);
       padding: $space-4;
     }
 
     .auth-card {
       background: $color-surface;
-      border-radius: $radius-xl;
-      box-shadow: $shadow-md;
-      padding: $space-8;
+      border-radius: $radius-2xl;
+      box-shadow: $shadow-xl;
+      padding: $space-10;
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
+      border: 1px solid rgba($color-border, 0.5);
     }
 
     .auth-header {
       text-align: center;
-      margin-bottom: $space-6;
+      margin-bottom: $space-8;
     }
 
     .auth-logo {
-      font-size: 2.5rem;
+      font-size: 3rem;
       font-weight: 700;
-      color: $color-primary;
+      background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin-bottom: $space-2;
     }
 
     .auth-subtitle {
       color: $color-text-secondary;
-      font-size: $font-size-base;
+      font-size: $font-size-md;
     }
 
     .auth-form {
       display: flex;
       flex-direction: column;
-      gap: $space-4;
+      gap: $space-5;
     }
 
     .auth-footer {
       text-align: center;
-      margin-top: $space-5;
+      margin-top: $space-6;
       font-size: $font-size-sm;
       color: $color-text-secondary;
-      a { color: $color-primary; font-weight: 500; }
+      a {
+        color: $color-primary;
+        font-weight: 600;
+        &:hover { color: $color-primary-dark; }
+      }
     }
   `,
 })

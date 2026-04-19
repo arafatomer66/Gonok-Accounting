@@ -9,7 +9,7 @@
     flex: 1;
     margin-left: $sidebar-width;
     margin-top: $navbar-height;
-    padding: $space-6;
+    padding: $space-8 $space-6;
     transition: margin-left $transition-slow;
     max-width: calc(100vw - $sidebar-width);
 
@@ -21,7 +21,7 @@
     @include mobile-only {
       margin-left: 0;
       max-width: 100vw;
-      padding: $space-4;
+      padding: $space-5;
     }
   }
 }
@@ -33,9 +33,10 @@
   gap: $space-3;
 
   &__title {
-    font-size: $font-size-xl;
-    font-weight: $font-weight-semibold;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
     color: $color-gray-900;
+    letter-spacing: $letter-spacing-tight;
   }
 
   &__actions {
@@ -50,7 +51,8 @@
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
     z-index: 99;
   }
 }

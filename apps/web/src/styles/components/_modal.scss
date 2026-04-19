@@ -3,7 +3,8 @@
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,30 +14,32 @@
 
 .modal {
   background: $color-surface;
-  border-radius: $radius-xl;
-  box-shadow: $shadow-lg;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-xl;
   width: 90%;
   max-width: 520px;
   max-height: 90vh;
   overflow-y: auto;
-  animation: slide-up $transition-base;
+  animation: slide-up $transition-slow;
 
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: $space-5 $space-5 0;
+    padding: $space-6 $space-6 0;
   }
 
   &__title {
     font-size: $font-size-lg;
     font-weight: $font-weight-semibold;
+    letter-spacing: $letter-spacing-tight;
   }
 
   &__close {
-    padding: $space-1;
-    border-radius: $radius-md;
+    padding: $space-2;
+    border-radius: $radius-lg;
     color: $color-gray-400;
+    transition: all $transition-fast;
     &:hover {
       background: $color-gray-100;
       color: $color-gray-600;
@@ -44,11 +47,11 @@
   }
 
   &__body {
-    padding: $space-5;
+    padding: $space-6;
   }
 
   &__footer {
-    padding: 0 $space-5 $space-5;
+    padding: 0 $space-6 $space-6;
     display: flex;
     gap: $space-3;
     justify-content: flex-end;
@@ -65,6 +68,6 @@
 }
 
 @keyframes slide-up {
-  from { transform: translateY(16px); opacity: 0; }
+  from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }

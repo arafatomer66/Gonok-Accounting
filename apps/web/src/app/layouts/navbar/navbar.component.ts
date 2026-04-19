@@ -67,23 +67,30 @@ import { BusinessSwitchService } from '../../core/services/business-switch.servi
 
     .navbar__sync {
       font-size: $font-size-xs;
-      padding: 2px $space-2;
-      border-radius: $radius-full;
+      font-weight: $font-weight-semibold;
+      padding: 3px $space-3;
+      border-radius: $radius-md;
 
       &--synced { background: #dcfce7; color: #16a34a; }
       &--syncing { background: #dbeafe; color: #2563eb; }
       &--error { background: #fee2e2; color: #dc2626; }
-      &--offline, &--paused { background: #f3f4f6; color: #6b7280; }
-      &--idle { background: #f3f4f6; color: #9ca3af; }
+      &--offline, &--paused { background: #f1f5f9; color: #64748b; }
+      &--idle { background: #f1f5f9; color: #94a3b8; }
     }
 
     .navbar__biz-select {
-      padding: 4px $space-2;
+      padding: 5px $space-3;
       border: 1px solid $color-border;
-      border-radius: $radius-md;
+      border-radius: $radius-lg;
       font-size: $font-size-sm;
       background: $color-surface;
       max-width: 180px;
+      transition: border-color 150ms ease;
+      &:focus {
+        outline: none;
+        border-color: $color-primary;
+        box-shadow: 0 0 0 3px rgba($color-primary, 0.12);
+      }
     }
 
     .navbar__user {
@@ -92,33 +99,42 @@ import { BusinessSwitchService } from '../../core/services/business-switch.servi
 
     .navbar__dropdown {
       position: absolute;
-      top: 100%;
+      top: calc(100% + 4px);
       right: 0;
-      margin-top: $space-1;
       background: $color-surface;
       border: 1px solid $color-border;
-      border-radius: $radius-md;
-      box-shadow: $shadow-md;
-      min-width: 180px;
+      border-radius: $radius-xl;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+      min-width: 200px;
       z-index: 200;
+      overflow: hidden;
+      animation: slide-up 150ms ease;
     }
 
     .navbar__dropdown-item {
       display: block;
       width: 100%;
-      padding: $space-2 $space-3;
+      padding: $space-3 $space-4;
       text-align: left;
       font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
       color: $color-gray-700;
       cursor: pointer;
+      transition: background 100ms ease;
       &:hover { background: $color-gray-50; }
     }
 
     .navbar__user-info {
       border-bottom: 1px solid $color-border;
       cursor: default;
-      small { display: block; color: $color-text-secondary; font-size: $font-size-xs; }
+      padding: $space-3 $space-4;
+      small { display: block; color: $color-text-secondary; font-size: $font-size-xs; margin-top: 2px; }
       &:hover { background: transparent; }
+    }
+
+    @keyframes slide-up {
+      from { transform: translateY(4px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
   `,
 })

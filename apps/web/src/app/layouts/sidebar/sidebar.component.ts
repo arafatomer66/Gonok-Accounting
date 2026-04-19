@@ -56,17 +56,18 @@ interface NavSection {
     @use '../../../styles/abstracts/variables' as *;
 
     .sidebar__logo-icon {
-      width: 32px;
-      height: 32px;
-      background: $color-primary;
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
       color: white;
-      border-radius: $radius-md;
+      border-radius: $radius-lg;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
       font-size: $font-size-lg;
       flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba($color-primary, 0.3);
     }
 
     .sidebar__biz-name {

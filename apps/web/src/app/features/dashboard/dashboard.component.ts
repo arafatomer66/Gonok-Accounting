@@ -96,10 +96,10 @@ import { ExpenseStore } from '../../core/stores/expense.store';
 
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: $space-5;
     }
-    .mt-4 { margin-top: $space-4; }
+    .mt-4 { margin-top: $space-6; }
     .text-muted { color: $color-text-secondary; }
     .card__value--success { color: $color-success; }
     .card__value--danger { color: $color-danger; }
