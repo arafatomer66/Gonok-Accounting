@@ -50,6 +50,7 @@ import { signal } from '@angular/core';
               }
               <td>
                 <div class="action-btns">
+                  <button class="btn btn--sm btn--ghost" (click)="printTx.emit(tx)" title="Print">🖨️</button>
                   <button class="btn btn--sm btn--ghost" (click)="edit.emit(tx)">Edit</button>
                   <button class="btn btn--sm btn--ghost btn--danger-text" (click)="delete.emit(tx)">Delete</button>
                 </div>
@@ -109,6 +110,7 @@ export class TransactionListComponent {
 
   edit = output<ITransaction>();
   delete = output<ITransaction>();
+  printTx = output<ITransaction>();
 
   searchTerm = signal('');
 

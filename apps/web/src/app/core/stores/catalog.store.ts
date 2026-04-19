@@ -19,6 +19,7 @@ import {
   EPartyHead,
   EPartyGroup,
 } from '@org/shared-types';
+import { ActivityLogService } from '../services/activity-log.service';
 import { DEFAULT_UNITS } from '../../features/products/data/default-units';
 
 interface CatalogState {
@@ -117,6 +118,7 @@ export const CatalogStore = signalStore(
   withMethods((store) => {
     const pouchDb = inject(PouchDbService);
     const authStore = inject(AuthStore);
+    const activityLog = inject(ActivityLogService);
 
     function getBizUuid(): string {
       const uuid = authStore.activeBusinessUuid();
@@ -235,6 +237,7 @@ export const CatalogStore = signalStore(
           product as unknown as Record<string, unknown>,
         );
         patchState(store, { products: [...store.products(), product] });
+        activityLog.log('create', 'product', product.name || uuid);
         return product;
       },
 
@@ -264,10 +267,12 @@ export const CatalogStore = signalStore(
       },
 
       async deleteProduct(uuid: string): Promise<void> {
+        const product = store.products().find((p) => p.uuid === uuid);
         await pouchDb.remove(ETables.PRODUCT, uuid);
         patchState(store, {
           products: store.products().filter((p) => p.uuid !== uuid),
         });
+        activityLog.log('delete', 'product', product?.name || uuid);
       },
 
       // ─── Category CRUD ─────────────────────────────
@@ -375,6 +380,7 @@ export const CatalogStore = signalStore(
           party as unknown as Record<string, unknown>,
         );
         patchState(store, { parties: [...store.parties(), party] });
+        activityLog.log('create', 'party', party.name || uuid, `Type: ${party.party_type}`);
         return party;
       },
 
@@ -404,10 +410,12 @@ export const CatalogStore = signalStore(
       },
 
       async deleteParty(uuid: string): Promise<void> {
+        const party = store.parties().find((p) => p.uuid === uuid);
         await pouchDb.remove(ETables.PARTY, uuid);
         patchState(store, {
           parties: store.parties().filter((p) => p.uuid !== uuid),
         });
+        activityLog.log('delete', 'party', party?.name || uuid);
       },
 
       // ─── PartyGroup CRUD ───────────────────────────

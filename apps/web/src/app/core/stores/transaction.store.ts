@@ -16,6 +16,7 @@ import {
   ETransactionType,
   EPartyType,
 } from '@org/shared-types';
+import { ActivityLogService } from '../services/activity-log.service';
 
 interface TransactionState {
   transactions: ITransaction[];
@@ -56,6 +57,7 @@ export const TransactionStore = signalStore(
     const pouchDb = inject(PouchDbService);
     const authStore = inject(AuthStore);
     const catalogStore = inject(CatalogStore);
+    const activityLog = inject(ActivityLogService);
 
     function getBizUuid(): string {
       const uuid = authStore.activeBusinessUuid();
@@ -255,6 +257,8 @@ export const TransactionStore = signalStore(
         patchState(store, {
           transactions: [...store.transactions(), transaction],
         });
+
+        activityLog.log('create', type, transaction.invoice_no || transaction.order_number || uuid, `Amount: ${transaction.total_amount}`);
         return transaction;
       },
 
@@ -367,6 +371,8 @@ export const TransactionStore = signalStore(
             .transactions()
             .filter((t) => t.uuid !== uuid),
         });
+
+        activityLog.log('delete', type, existing.invoice_no || existing.order_number || uuid, `Amount: ${existing.total_amount}`);
       },
 
       reset(): void {

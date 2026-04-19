@@ -15,4 +15,6 @@ export enum ETables {
   BANK_ACCOUNT = 'bank_account',
   BANK_TRANSACTION = 'bank_transaction',
   CASH_ADJUSTMENT = 'cash_adjustment',
+  ACTIVITY_LOG = 'activity_log',
+  BRANCH = 'branch',
 }

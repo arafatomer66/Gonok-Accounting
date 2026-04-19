@@ -4,12 +4,13 @@ import { CatalogStore } from '../../../core/stores/catalog.store';
 import { TransactionListComponent } from '../../../shared/components/transaction-list/transaction-list.component';
 import { TransactionFormComponent } from '../../../shared/components/transaction-form/transaction-form.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { InvoicePrintComponent } from '../../../shared/components/invoice/invoice-print.component';
 import { ITransaction, ETransactionType } from '@org/shared-types';
 
 @Component({
   selector: 'gonok-sales',
   standalone: true,
-  imports: [TransactionListComponent, TransactionFormComponent, ConfirmDialogComponent],
+  imports: [TransactionListComponent, TransactionFormComponent, ConfirmDialogComponent, InvoicePrintComponent],
   template: `
     <div class="page-header">
       <h1 class="page-header__title">Sales</h1>
@@ -23,7 +24,16 @@ import { ITransaction, ETransactionType } from '@org/shared-types';
       emptyMessage="No sales transactions yet."
       (edit)="editTx($event)"
       (delete)="confirmDelete($event)"
+      (printTx)="printInvoice($event)"
     />
+
+    @if (printingTx()) {
+      <gonok-invoice-print
+        [tx]="printingTx()!"
+        [visible]="true"
+        (closed)="printingTx.set(null)"
+      />
+    }
 
     @if (showForm()) {
       <gonok-transaction-form
@@ -54,6 +64,7 @@ export class SalesComponent implements OnInit {
   editingTx = signal<ITransaction | null>(null);
   showDeleteConfirm = signal(false);
   deletingTx = signal<ITransaction | null>(null);
+  printingTx = signal<ITransaction | null>(null);
 
   ngOnInit(): void {
     if (!this.catalogStore.initialized()) this.catalogStore.loadAll();
@@ -77,6 +88,10 @@ export class SalesComponent implements OnInit {
 
   onSaved(): void {
     this.closeForm();
+  }
+
+  printInvoice(tx: ITransaction): void {
+    this.printingTx.set(tx);
   }
 
   confirmDelete(tx: ITransaction): void {

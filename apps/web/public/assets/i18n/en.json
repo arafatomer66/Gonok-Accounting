@@ -85,7 +85,11 @@
     "due_list": "Due List",
     "cash_adjustment": "Cash Adjustment",
     "bank": "Bank",
-    "businesses": "Businesses"
+    "businesses": "Businesses",
+    "import": "Import Data",
+    "branches": "Branches",
+    "backup": "Backup & Restore",
+    "activity_log": "Activity Log"
   },
   "dashboard": {
     "total_sales": "Total Sales",

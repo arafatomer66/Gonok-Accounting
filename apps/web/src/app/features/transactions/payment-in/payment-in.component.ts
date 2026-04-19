@@ -4,12 +4,13 @@ import { CatalogStore } from '../../../core/stores/catalog.store';
 import { TransactionListComponent } from '../../../shared/components/transaction-list/transaction-list.component';
 import { TransactionFormComponent } from '../../../shared/components/transaction-form/transaction-form.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { InvoicePrintComponent } from '../../../shared/components/invoice/invoice-print.component';
 import { ITransaction, ETransactionType } from '@org/shared-types';
 
 @Component({
   selector: 'gonok-payment-in',
   standalone: true,
-  imports: [TransactionListComponent, TransactionFormComponent, ConfirmDialogComponent],
+  imports: [TransactionListComponent, TransactionFormComponent, ConfirmDialogComponent, InvoicePrintComponent],
   template: `
     <div class="page-header">
       <h1 class="page-header__title">Payment In</h1>
@@ -24,7 +25,12 @@ import { ITransaction, ETransactionType } from '@org/shared-types';
       [hidedue]="true"
       (edit)="editTx($event)"
       (delete)="confirmDelete($event)"
+      (printTx)="printInvoice($event)"
     />
+
+    @if (printingTx()) {
+      <gonok-invoice-print [tx]="printingTx()!" [visible]="true" (closed)="printingTx.set(null)" />
+    }
 
     @if (showForm()) {
       <gonok-transaction-form
@@ -55,6 +61,7 @@ export class PaymentInComponent implements OnInit {
   editingTx = signal<ITransaction | null>(null);
   showDeleteConfirm = signal(false);
   deletingTx = signal<ITransaction | null>(null);
+  printingTx = signal<ITransaction | null>(null);
 
   ngOnInit(): void {
     if (!this.catalogStore.initialized()) this.catalogStore.loadAll();
@@ -79,6 +86,8 @@ export class PaymentInComponent implements OnInit {
   onSaved(): void {
     this.closeForm();
   }
+
+  printInvoice(tx: ITransaction): void { this.printingTx.set(tx); }
 
   confirmDelete(tx: ITransaction): void {
     this.deletingTx.set(tx);

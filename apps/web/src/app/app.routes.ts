@@ -163,6 +163,34 @@ export const appRoutes: Route[] = [
             (m) => m.ProfileComponent,
           ),
       },
+      {
+        path: 'activity-log',
+        loadComponent: () =>
+          import('./features/activity-log/activity-log.component').then(
+            (m) => m.ActivityLogComponent,
+          ),
+      },
+      {
+        path: 'backup',
+        loadComponent: () =>
+          import('./features/backup/backup.component').then(
+            (m) => m.BackupComponent,
+          ),
+      },
+      {
+        path: 'import',
+        loadComponent: () =>
+          import('./features/import/import.component').then(
+            (m) => m.ImportComponent,
+          ),
+      },
+      {
+        path: 'branches',
+        loadComponent: () =>
+          import('./features/branches/branches.component').then(
+            (m) => m.BranchesComponent,
+          ),
+      },
     ],
   },
 

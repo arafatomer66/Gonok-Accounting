@@ -130,7 +130,11 @@ export class SidebarComponent {
       titleKey: 'menu.others',
       items: [
         { labelKey: 'menu.reports', icon: '📈', route: '/reports' },
+        { labelKey: 'menu.import', icon: '📂', route: '/import' },
+        { labelKey: 'menu.branches', icon: '🏬', route: '/branches' },
         { labelKey: 'menu.businesses', icon: '🏢', route: '/businesses' },
+        { labelKey: 'menu.backup', icon: '💾', route: '/backup' },
+        { labelKey: 'menu.activity_log', icon: '📝', route: '/activity-log' },
         { labelKey: 'menu.settings', icon: '⚙️', route: '/settings' },
         { labelKey: 'menu.users', icon: '👤', route: '/users' },
       ],
