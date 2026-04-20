@@ -81,7 +81,7 @@ export class CouchDbService {
   } {
     const dbName = `gonok-${userUuid}`;
     return {
-      url: `${env.COUCHDB_URL}/${dbName}`,
+      url: `${env.COUCHDB_PUBLIC_URL || env.COUCHDB_URL}/${dbName}`,
       username: `gonok-${userUuid}`,
       password: this.generatePassword(userUuid),
       database: dbName,

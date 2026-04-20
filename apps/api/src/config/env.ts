@@ -10,6 +10,7 @@ export const env = {
   JWT_EXPIRY: process.env.JWT_EXPIRY || '1h',
   JWT_REFRESH_EXPIRY: process.env.JWT_REFRESH_EXPIRY || '7d',
   COUCHDB_URL: process.env.COUCHDB_URL || 'http://localhost:5984',
+  COUCHDB_PUBLIC_URL: process.env.COUCHDB_PUBLIC_URL || '',
   COUCHDB_USERNAME: process.env.COUCHDB_USERNAME || 'admin',
   COUCHDB_PASSWORD: process.env.COUCHDB_PASSWORD || 'password',
 };
