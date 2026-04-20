@@ -1,0 +1,17 @@
+node_modules
+dist
+.angular
+.nx
+.git
+.github
+.claude
+cypress
+*.md
+.env
+.env.*
+!.env.example
+.vscode
+.idea
+*.log
+tmp
+coverage

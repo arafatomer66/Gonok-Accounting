@@ -21,7 +21,16 @@ Thumbs.db
 
 # Environment
 .env
-.env.*
+.env.prod
+!.env.example
+!.env.prod.example
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/.terraform.lock.hcl
+terraform/terraform.tfvars
 
 # Logs
 *.log

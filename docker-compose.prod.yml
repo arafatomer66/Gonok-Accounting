@@ -1,0 +1,66 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - gonok-net
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    expose:
+      - "3333"
+    env_file:
+      - path: .env.prod
+        required: false
+    depends_on:
+      postgres:
+        condition: service_healthy
+      couchdb:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - gonok-net
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-gonok}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-gonok}
+      POSTGRES_DB: ${DB_NAME:-gonok}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-gonok}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - gonok-net
+
+  couchdb:
+    image: couchdb:3
+    environment:
+      COUCHDB_USER: ${COUCHDB_USERNAME:-admin}
+      COUCHDB_PASSWORD: ${COUCHDB_PASSWORD:-password}
+    volumes:
+      - couchdata:/opt/couchdb/data
+    restart: unless-stopped
+    networks:
+      - gonok-net
+
+volumes:
+  pgdata:
+  couchdata:
+
+networks:
+  gonok-net:
+    driver: bridge
