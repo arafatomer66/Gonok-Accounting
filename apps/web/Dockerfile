@@ -1,8 +1,14 @@
 # Stage 1: Build
 FROM node:20-alpine AS builder
 WORKDIR /app
+
+# Copy all package.json files for workspace resolution
 COPY package*.json ./
+COPY libs/shared-types/package.json ./libs/shared-types/
+COPY apps/api/package.json ./apps/api/
 RUN npm ci --legacy-peer-deps
+
+# Copy source and build
 COPY . .
 RUN npx nx build shared-types && npx nx build web
 
