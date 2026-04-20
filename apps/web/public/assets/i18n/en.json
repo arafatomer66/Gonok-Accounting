@@ -94,7 +94,9 @@
     "quotations": "Quotations",
     "recurring_expenses": "Recurring Expenses",
     "payroll": "Payroll",
-    "deliveries": "Deliveries"
+    "deliveries": "Deliveries",
+    "crm_section": "CRM",
+    "crm": "CRM"
   },
   "dashboard": {
     "total_sales": "Total Sales",

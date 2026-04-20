@@ -114,6 +114,12 @@ export class SidebarComponent {
       ],
     },
     {
+      titleKey: 'menu.crm_section',
+      items: [
+        { labelKey: 'menu.crm', icon: '🤝', route: '/crm' },
+      ],
+    },
+    {
       titleKey: 'menu.master',
       items: [
         { labelKey: 'menu.parties', icon: '👥', route: '/parties' },

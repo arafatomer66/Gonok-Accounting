@@ -226,6 +226,11 @@ export const appRoutes: Route[] = [
             (m) => m.DeliveriesComponent,
           ),
       },
+      {
+        path: 'crm',
+        loadChildren: () =>
+          import('./features/crm/crm.routes').then((m) => m.CRM_ROUTES),
+      },
     ],
   },
 

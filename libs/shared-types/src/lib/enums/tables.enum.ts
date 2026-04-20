@@ -24,4 +24,7 @@ export enum ETables {
   SALARY = 'salary',
   DELIVERY = 'delivery',
   DELIVERY_ITEM = 'delivery_item',
+  CRM_INTERACTION = 'crm_interaction',
+  CRM_OPPORTUNITY = 'crm_opportunity',
+  CRM_NOTE = 'crm_note',
 }

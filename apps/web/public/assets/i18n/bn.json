@@ -94,7 +94,9 @@
     "quotations": "কোটেশন",
     "recurring_expenses": "পুনরাবৃত্ত খরচ",
     "payroll": "বেতন",
-    "deliveries": "ডেলিভারি"
+    "deliveries": "ডেলিভারি",
+    "crm_section": "সিআরএম",
+    "crm": "সিআরএম"
   },
   "dashboard": {
     "total_sales": "মোট বিক্রয়",
