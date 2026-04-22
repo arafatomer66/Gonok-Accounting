@@ -96,7 +96,9 @@
     "payroll": "বেতন",
     "deliveries": "ডেলিভারি",
     "crm_section": "সিআরএম",
-    "crm": "সিআরএম"
+    "crm": "সিআরএম",
+    "purchase_orders": "ক্রয় আদেশ",
+    "aging_report": "এজিং রিপোর্ট"
   },
   "dashboard": {
     "total_sales": "মোট বিক্রয়",
@@ -353,6 +355,48 @@
     "vehicle_no": "গাড়ি নম্বর",
     "items_heading": "আইটেম সমূহ",
     "notes": "নোটস"
+  },
+  "po": {
+    "title": "ক্রয় আদেশ",
+    "new": "নতুন ক্রয় আদেশ",
+    "edit": "ক্রয় আদেশ সম্পাদনা",
+    "po_no": "পিও নং",
+    "supplier": "সাপ্লাইয়ার",
+    "expected_delivery": "প্রত্যাশিত ডেলিভারি",
+    "status": "অবস্থা",
+    "draft": "খসড়া",
+    "sent": "প্রেরিত",
+    "partially_received": "আংশিক প্রাপ্ত",
+    "received": "প্রাপ্ত",
+    "cancelled": "বাতিল",
+    "receive_goods": "পণ্য গ্রহণ",
+    "convert_invoice": "চালানে রূপান্তর",
+    "grn_history": "জিআরএন ইতিহাস",
+    "grn_no": "জিআরএন নং",
+    "ordered": "অর্ডারকৃত",
+    "received_qty": "প্রাপ্ত",
+    "receiving_now": "এখন গ্রহণ",
+    "notes": "নোটস",
+    "empty": "কোন ক্রয় আদেশ নেই"
+  },
+  "credit": {
+    "credit_limit": "ক্রেডিট সীমা",
+    "payment_terms": "পেমেন্ট শর্তাবলী",
+    "custom_days": "কাস্টম দিন",
+    "unlimited": "সীমাহীন",
+    "limit_warning": "ক্রেডিট সীমা সতর্কতা",
+    "exceeds_limit": "এই লেনদেন ক্রেডিট সীমা অতিক্রম করবে"
+  },
+  "aging": {
+    "title": "এজিং রিপোর্ট",
+    "receivable": "প্রাপ্য",
+    "payable": "প্রদেয়",
+    "current": "বর্তমান",
+    "days_1_30": "১-৩০ দিন",
+    "days_31_60": "৩১-৬০ দিন",
+    "days_61_90": "৬১-৯০ দিন",
+    "days_90_plus": "৯০+ দিন",
+    "no_data": "কোন বকেয়া পাওয়া যায়নি"
   },
   "sync": {
     "synced": "সিঙ্ক হয়েছে",

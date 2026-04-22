@@ -510,6 +510,20 @@ export class TransactionFormComponent implements OnInit {
       return;
     }
 
+    // Credit limit check for credit transactions
+    if (this.transactionMode === ETransactionMode.CREDIT && this.partyUuid) {
+      const due = this.isPayment() ? 0 : Math.max(0, (this.subtotal() + this.totalTax() - this.discount) - this.paidAmount);
+      if (due > 0) {
+        const check = this.catalogStore.checkCreditLimit(this.partyUuid, due);
+        if (!check.allowed) {
+          const proceed = confirm(
+            `Credit limit warning!\n\nCredit Limit: ${check.limit.toLocaleString()}\nCurrent Balance: ${check.currentBalance.toLocaleString()}\nNew Due: ${due.toLocaleString()}\n\nThis transaction will exceed the credit limit. Proceed anyway?`
+          );
+          if (!proceed) return;
+        }
+      }
+    }
+
     this.saving.set(true);
     this.error.set('');
 

@@ -82,6 +82,38 @@ import { IParty, IPartyGroup, EPartyType } from '@org/shared-types';
             <textarea class="form-input" [(ngModel)]="shippingAddress" name="shippingAddress" rows="2" placeholder="Shipping address"></textarea>
           </div>
 
+          <h4 class="section-title">Credit & Payment Terms</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Credit Limit</label>
+              <input class="form-input" type="number" [(ngModel)]="creditLimit" name="creditLimit" step="1" min="0" placeholder="0 = Unlimited" />
+              <small class="form-hint">0 = Unlimited</small>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Payment Terms</label>
+              <select class="form-input" [(ngModel)]="paymentTerms" name="paymentTerms">
+                <option value="">None</option>
+                <option value="immediate">Immediate</option>
+                <option value="net_7">Net 7</option>
+                <option value="net_15">Net 15</option>
+                <option value="net_30">Net 30</option>
+                <option value="net_60">Net 60</option>
+                <option value="net_90">Net 90</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+          </div>
+
+          @if (paymentTerms === 'custom') {
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Custom Days</label>
+                <input class="form-input" type="number" [(ngModel)]="paymentTermsDays" name="paymentTermsDays" step="1" min="1" placeholder="Number of days" />
+              </div>
+              <div></div>
+            </div>
+          }
+
           @if (error()) {
             <p class="form-error">{{ error() }}</p>
           }
@@ -120,6 +152,21 @@ import { IParty, IPartyGroup, EPartyType } from '@org/shared-types';
       gap: $space-2;
       .form-input { flex: 1; }
     }
+
+    .section-title {
+      font-size: $font-size-base;
+      font-weight: $font-weight-semibold;
+      margin-bottom: $space-3;
+      margin-top: $space-2;
+      padding-top: $space-3;
+      border-top: 1px solid $color-border;
+    }
+
+    .form-hint {
+      font-size: $font-size-xs;
+      color: $color-text-secondary;
+      margin-top: 2px;
+    }
   `,
 })
 export class PartyFormComponent implements OnInit {
@@ -143,6 +190,9 @@ export class PartyFormComponent implements OnInit {
   balanceDate = '';
   address = '';
   shippingAddress = '';
+  creditLimit = 0;
+  paymentTerms = '';
+  paymentTermsDays = 0;
 
   ngOnInit(): void {
     const p = this.party();
@@ -159,6 +209,9 @@ export class PartyFormComponent implements OnInit {
         : '';
       this.address = p.address || '';
       this.shippingAddress = p.shipping_address || '';
+      this.creditLimit = p.credit_limit || 0;
+      this.paymentTerms = p.payment_terms || '';
+      this.paymentTermsDays = p.payment_terms_days || 0;
     } else {
       // Default group to General (business uuid)
       const groups = this.catalogStore.allPartyGroups();
@@ -224,6 +277,9 @@ export class PartyFormComponent implements OnInit {
         : 0,
       address: this.address.trim() || null,
       shipping_address: this.shippingAddress.trim() || null,
+      credit_limit: this.creditLimit || 0,
+      payment_terms: this.paymentTerms || null,
+      payment_terms_days: this.paymentTerms === 'custom' ? (this.paymentTermsDays || 0) : 0,
     };
 
     try {

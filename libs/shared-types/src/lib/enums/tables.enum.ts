@@ -27,4 +27,8 @@ export enum ETables {
   CRM_INTERACTION = 'crm_interaction',
   CRM_OPPORTUNITY = 'crm_opportunity',
   CRM_NOTE = 'crm_note',
+  PURCHASE_ORDER = 'purchase_order',
+  PURCHASE_ORDER_ITEM = 'purchase_order_item',
+  GOODS_RECEIPT_NOTE = 'goods_receipt_note',
+  GOODS_RECEIPT_NOTE_ITEM = 'goods_receipt_note_item',
 }

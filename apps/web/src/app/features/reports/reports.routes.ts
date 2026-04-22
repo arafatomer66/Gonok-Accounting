@@ -39,4 +39,11 @@ export const REPORT_ROUTES: Route[] = [
         (m) => m.StockSummaryComponent,
       ),
   },
+  {
+    path: 'aging',
+    loadComponent: () =>
+      import('./aging-report/aging-report.component').then(
+        (m) => m.AgingReportComponent,
+      ),
+  },
 ];

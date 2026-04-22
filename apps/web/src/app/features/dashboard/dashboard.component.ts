@@ -3,6 +3,7 @@ import { DecimalPipe, DatePipe } from '@angular/common';
 import { TransactionStore } from '../../core/stores/transaction.store';
 import { CatalogStore } from '../../core/stores/catalog.store';
 import { ExpenseStore } from '../../core/stores/expense.store';
+import { PurchaseOrderStore } from '../../core/stores/purchase-order.store';
 import { AuthStore } from '../../core/stores/auth.store';
 import { PouchDbService } from '../../core/services/pouchdb.service';
 import { ITransactionItem, ETables } from '@org/shared-types';
@@ -54,6 +55,26 @@ Chart.register(...registerables);
       <div class="card card--stat">
         <div class="card__label">Parties</div>
         <div class="card__value">{{ catalogStore.parties().length }}</div>
+      </div>
+    </div>
+
+    <!-- PO & Overdue Row -->
+    <div class="dashboard-grid mt-4">
+      <div class="card card--stat">
+        <div class="card__label">Open POs</div>
+        <div class="card__value">{{ purchaseOrderStore.openOrders().length }}</div>
+      </div>
+      <div class="card card--stat">
+        <div class="card__label">PO Value (Open)</div>
+        <div class="card__value">&#2547;{{ openPOValue() | number:'1.2-2' }}</div>
+      </div>
+      <div class="card card--stat">
+        <div class="card__label">Overdue Receivables</div>
+        <div class="card__value" [class.card__value--danger]="overdueReceivableCount() > 0">{{ overdueReceivableCount() }}</div>
+      </div>
+      <div class="card card--stat">
+        <div class="card__label">Overdue Payables</div>
+        <div class="card__value" [class.card__value--danger]="overduePayableCount() > 0">{{ overduePayableCount() }}</div>
       </div>
     </div>
 
@@ -166,6 +187,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   private pouchDb = inject(PouchDbService);
   catalogStore = inject(CatalogStore);
   expenseStore = inject(ExpenseStore);
+  purchaseOrderStore = inject(PurchaseOrderStore);
 
   salesItems = signal<ITransactionItem[]>([]);
 
@@ -193,6 +215,30 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   totalPayable = computed(() =>
     this.catalogStore.suppliers().reduce((s, p) => s + Math.max(0, p.current_balance || 0), 0),
   );
+
+  openPOValue = computed(() =>
+    this.purchaseOrderStore.openOrders().reduce((s, po) => s + (po.total_amount || 0), 0),
+  );
+
+  overdueReceivableCount = computed(() => {
+    const now = Date.now();
+    return this.transactionStore.transactions()
+      .filter((t) => t.due_amount > 0 && t.due_date > 0 && t.due_date < now)
+      .filter((t) => {
+        const party = this.catalogStore.parties().find((p) => p.uuid === t.party_uuid);
+        return party?.party_type === 'customer';
+      }).length;
+  });
+
+  overduePayableCount = computed(() => {
+    const now = Date.now();
+    return this.transactionStore.transactions()
+      .filter((t) => t.due_amount > 0 && t.due_date > 0 && t.due_date < now)
+      .filter((t) => {
+        const party = this.catalogStore.parties().find((p) => p.uuid === t.party_uuid);
+        return party?.party_type === 'supplier';
+      }).length;
+  });
 
   recentTransactions = computed(() =>
     [...this.transactionStore.transactions()]
@@ -254,6 +300,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     if (!this.catalogStore.initialized()) this.catalogStore.loadAll();
     if (!this.transactionStore.initialized()) this.transactionStore.loadAll();
     if (!this.expenseStore.initialized()) this.expenseStore.loadAll();
+    if (!this.purchaseOrderStore.initialized()) this.purchaseOrderStore.loadAll();
 
     const bizUuid = this.authStore.activeBusinessUuid();
     if (bizUuid) {

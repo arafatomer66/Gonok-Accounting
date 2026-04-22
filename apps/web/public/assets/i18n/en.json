@@ -96,7 +96,9 @@
     "payroll": "Payroll",
     "deliveries": "Deliveries",
     "crm_section": "CRM",
-    "crm": "CRM"
+    "crm": "CRM",
+    "purchase_orders": "Purchase Orders",
+    "aging_report": "Aging Report"
   },
   "dashboard": {
     "total_sales": "Total Sales",
@@ -353,6 +355,48 @@
     "vehicle_no": "Vehicle No",
     "items_heading": "Items",
     "notes": "Notes"
+  },
+  "po": {
+    "title": "Purchase Orders",
+    "new": "New Purchase Order",
+    "edit": "Edit Purchase Order",
+    "po_no": "PO No",
+    "supplier": "Supplier",
+    "expected_delivery": "Expected Delivery",
+    "status": "Status",
+    "draft": "Draft",
+    "sent": "Sent",
+    "partially_received": "Partially Received",
+    "received": "Received",
+    "cancelled": "Cancelled",
+    "receive_goods": "Receive Goods",
+    "convert_invoice": "Convert to Invoice",
+    "grn_history": "GRN History",
+    "grn_no": "GRN No",
+    "ordered": "Ordered",
+    "received_qty": "Received",
+    "receiving_now": "Receiving Now",
+    "notes": "Notes",
+    "empty": "No purchase orders yet"
+  },
+  "credit": {
+    "credit_limit": "Credit Limit",
+    "payment_terms": "Payment Terms",
+    "custom_days": "Custom Days",
+    "unlimited": "Unlimited",
+    "limit_warning": "Credit limit warning",
+    "exceeds_limit": "This transaction will exceed the credit limit"
+  },
+  "aging": {
+    "title": "Aging Report",
+    "receivable": "Receivable",
+    "payable": "Payable",
+    "current": "Current",
+    "days_1_30": "1-30 days",
+    "days_31_60": "31-60 days",
+    "days_61_90": "61-90 days",
+    "days_90_plus": "90+ days",
+    "no_data": "No outstanding dues found"
   },
   "sync": {
     "synced": "Synced",

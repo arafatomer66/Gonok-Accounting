@@ -13,3 +13,4 @@ export * from './recurring-expense.model.js';
 export * from './payroll.model.js';
 export * from './delivery.model.js';
 export * from './crm.model.js';
+export * from './purchase-order.model.js';

@@ -109,6 +109,7 @@ export class SidebarComponent {
       titleKey: 'menu.purchase_section',
       items: [
         { labelKey: 'menu.purchase', icon: '📦', route: '/purchase' },
+        { labelKey: 'menu.purchase_orders', icon: '📋', route: '/purchase-orders' },
         { labelKey: 'menu.purchase_return', icon: '↩️', route: '/purchase-return' },
         { labelKey: 'menu.payment_out', icon: '💸', route: '/payment-out' },
       ],
@@ -133,6 +134,7 @@ export class SidebarComponent {
       titleKey: 'menu.finance',
       items: [
         { labelKey: 'menu.due_list', icon: '📑', route: '/due-list' },
+        { labelKey: 'menu.aging_report', icon: '📊', route: '/reports/aging' },
         { labelKey: 'menu.cash_adjustment', icon: '💵', route: '/cash-adjustment' },
         { labelKey: 'menu.bank', icon: '🏦', route: '/bank' },
       ],

@@ -15,6 +15,7 @@ import {
   ETables,
   ETransactionType,
   EPartyType,
+  getPaymentTermsDays,
 } from '@org/shared-types';
 import { ActivityLogService } from '../services/activity-log.service';
 
@@ -51,6 +52,11 @@ export const TransactionStore = signalStore(
     ),
     paymentsOut: computed(() =>
       store.transactions().filter((t) => t.type === ETransactionType.PAYMENT_OUT),
+    ),
+    overdueTransactions: computed(() =>
+      store.transactions().filter(
+        (t) => t.due_amount > 0 && t.due_date > 0 && t.due_date < Date.now(),
+      ),
     ),
   })),
   withMethods((store) => {
@@ -214,11 +220,24 @@ export const TransactionStore = signalStore(
           invoice_date: data.invoice_date ?? now,
           invoice_no: data.invoice_no ?? generateInvoiceNo(type),
           return_no: data.return_no ?? null,
+          due_date: data.due_date ?? 0,
+          po_uuid: data.po_uuid ?? null,
           created_at: now,
           updated_at: now,
           created_by: null,
           updated_by: null,
         };
+
+        // Auto-calculate due_date from party payment terms if not provided
+        if (!transaction.due_date && transaction.party_uuid && transaction.transaction_mode === 'credit') {
+          const party = catalogStore.parties().find((p) => p.uuid === transaction.party_uuid);
+          if (party?.payment_terms) {
+            const days = party.payment_terms_days || getPaymentTermsDays(party.payment_terms);
+            if (days > 0) {
+              transaction.due_date = transaction.transaction_date + days * 86400000;
+            }
+          }
+        }
 
         // Build transaction items
         const txItems: ITransactionItem[] = items.map((item) => ({

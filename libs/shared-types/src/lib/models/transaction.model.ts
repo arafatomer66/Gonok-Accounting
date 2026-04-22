@@ -26,6 +26,8 @@ export interface ITransaction extends IBaseModel, ICouchDoc {
   invoice_date: number;
   invoice_no: string | null;
   return_no: string | null;
+  due_date: number;
+  po_uuid: string | null;
 }
 
 export interface ITransactionItem extends IBaseModel, ICouchDoc {

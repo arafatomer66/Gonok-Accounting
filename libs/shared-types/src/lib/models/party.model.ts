@@ -16,6 +16,9 @@ export interface IParty extends IBaseModel, ICouchDoc {
   current_balance_date: number;
   current_balance: number;
   can_delete: boolean;
+  credit_limit: number;
+  payment_terms: string | null;
+  payment_terms_days: number;
 }
 
 export interface IPartyGroup extends IBaseModel, ICouchDoc {

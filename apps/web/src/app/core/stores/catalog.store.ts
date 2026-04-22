@@ -88,6 +88,9 @@ export const CatalogStore = signalStore(
           current_balance: 0,
           current_balance_date: 0,
           can_delete: false,
+          credit_limit: 0,
+          payment_terms: null,
+          payment_terms_days: 0,
           table_type: ETables.PARTY,
           created_at: 0,
           updated_at: 0,
@@ -369,6 +372,9 @@ export const CatalogStore = signalStore(
           current_balance: data.current_balance ?? 0,
           current_balance_date: data.current_balance_date ?? 0,
           can_delete: true,
+          credit_limit: data.credit_limit ?? 0,
+          payment_terms: data.payment_terms ?? null,
+          payment_terms_days: data.payment_terms_days ?? 0,
           created_at: now,
           updated_at: now,
           created_by: null,
@@ -455,6 +461,19 @@ export const CatalogStore = signalStore(
             .partyGroups()
             .filter((g) => g.uuid !== uuid),
         });
+      },
+
+      checkCreditLimit(partyUuid: string, additionalAmount: number): { allowed: boolean; limit: number; currentBalance: number } {
+        const party = store.parties().find((p) => p.uuid === partyUuid);
+        if (!party || !party.credit_limit || party.credit_limit <= 0) {
+          return { allowed: true, limit: 0, currentBalance: party?.current_balance ?? 0 };
+        }
+        const newBalance = party.current_balance + additionalAmount;
+        return {
+          allowed: newBalance <= party.credit_limit,
+          limit: party.credit_limit,
+          currentBalance: party.current_balance,
+        };
       },
 
       /** Reset catalog on business switch */
