@@ -6,6 +6,7 @@ import { ExpenseStore } from '../../core/stores/expense.store';
 import { PurchaseOrderStore } from '../../core/stores/purchase-order.store';
 import { AuthStore } from '../../core/stores/auth.store';
 import { PouchDbService } from '../../core/services/pouchdb.service';
+import { DemoSeedService } from '../../core/services/demo-seed.service';
 import { ITransactionItem, ETables } from '@org/shared-types';
 import { Chart, registerables } from 'chart.js';
 
@@ -18,6 +19,12 @@ Chart.register(...registerables);
   template: `
     <div class="page-header">
       <h1 class="page-header__title">Dashboard</h1>
+      @if (catalogStore.products().length === 0 && !seeding()) {
+        <button class="btn btn--primary" (click)="seedDemo()">Seed Demo Data</button>
+      }
+      @if (seeding()) {
+        <span class="btn btn--ghost" disabled>Seeding...</span>
+      }
     </div>
 
     <div class="dashboard-grid">
@@ -188,7 +195,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   catalogStore = inject(CatalogStore);
   expenseStore = inject(ExpenseStore);
   purchaseOrderStore = inject(PurchaseOrderStore);
+  private demoSeed = inject(DemoSeedService);
 
+  seeding = signal(false);
   salesItems = signal<ITransactionItem[]>([]);
 
   @ViewChild('salesChart') salesChartRef!: ElementRef<HTMLCanvasElement>;
@@ -428,6 +437,29 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         },
       },
     });
+  }
+
+  async seedDemo(): Promise<void> {
+    this.seeding.set(true);
+    try {
+      await this.demoSeed.seed();
+      // Reload all stores
+      await Promise.all([
+        this.catalogStore.loadAll(),
+        this.transactionStore.loadAll(),
+        this.expenseStore.loadAll(),
+        this.purchaseOrderStore.loadAll(),
+      ]);
+      // Reload sales items for charts
+      const bizUuid = this.authStore.activeBusinessUuid();
+      if (bizUuid) {
+        const allItems = await this.pouchDb.findByBusiness<ITransactionItem>(ETables.TRANSACTION_ITEM, bizUuid);
+        this.salesItems.set(allItems.filter((i) => i.transaction_type === 'sales'));
+      }
+    } catch (err) {
+      console.error('[DemoSeed] Error:', err);
+    }
+    this.seeding.set(false);
   }
 
   formatType(type: string | null): string {
