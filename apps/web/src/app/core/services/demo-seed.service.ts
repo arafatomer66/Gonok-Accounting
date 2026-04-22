@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { CatalogStore } from '../stores/catalog.store';
 import { TransactionStore } from '../stores/transaction.store';
 import { ExpenseStore } from '../stores/expense.store';
+import { PurchaseOrderStore } from '../stores/purchase-order.store';
 import { ETransactionType, EPartyType } from '@org/shared-types';
 
 @Injectable({ providedIn: 'root' })
@@ -9,6 +10,7 @@ export class DemoSeedService {
   private catalogStore = inject(CatalogStore);
   private transactionStore = inject(TransactionStore);
   private expenseStore = inject(ExpenseStore);
+  private purchaseOrderStore = inject(PurchaseOrderStore);
 
   async seed(): Promise<void> {
     // Skip if data already exists
@@ -110,6 +112,9 @@ export class DemoSeedService {
       party_type: EPartyType.SUPPLIER,
       phone: '01612345681',
       address: 'Elephant Road, Dhaka',
+      credit_limit: 500000,
+      payment_terms: 'net_30',
+      payment_terms_days: 0,
     });
 
     const sFresh = await this.catalogStore.addParty({
@@ -117,6 +122,23 @@ export class DemoSeedService {
       party_type: EPartyType.SUPPLIER,
       phone: '01512345682',
       address: 'Kawran Bazar, Dhaka',
+      credit_limit: 200000,
+      payment_terms: 'net_15',
+      payment_terms_days: 0,
+    });
+
+    // Add credit limits to customers
+    await this.catalogStore.updateParty(cRahman.uuid, {
+      credit_limit: 100000,
+      payment_terms: 'net_30',
+    });
+    await this.catalogStore.updateParty(cKarim.uuid, {
+      credit_limit: 50000,
+      payment_terms: 'net_7',
+    });
+    await this.catalogStore.updateParty(cFatema.uuid, {
+      credit_limit: 30000,
+      payment_terms: 'net_15',
     });
 
     // ─── Helper: date offset ─────────────────────────
@@ -319,6 +341,129 @@ export class DemoSeedService {
         total_quantity: 1,
       },
       [{ item_name: 'Pathao Delivery', rate: 800, quantity: 1, amount: 800 }],
+    );
+
+    // ─── Purchase Orders ──────────────────────────────
+    // PO 1: Fully received — ready to convert
+    const po1 = await this.purchaseOrderStore.addPurchaseOrder(
+      {
+        party_uuid: sGlobal.uuid,
+        po_date: daysAgo(7),
+        expected_delivery_date: daysAgo(2),
+        status: 'sent',
+        total_amount: 147000,
+        total_tax: 7000,
+        discount: 0,
+        notes: 'Urgent restock of Samsung phones',
+      },
+      [
+        { item_uuid: pPhone.uuid, quantity: 10, price: 14000, discount: 0, total: 140000 },
+        { item_uuid: pCharger.uuid, quantity: 20, price: 350, discount: 0, total: 7000 },
+      ],
+    );
+
+    // Receive all goods for PO1
+    const po1Items = await this.purchaseOrderStore.getPurchaseOrderItems(po1.uuid);
+    await this.purchaseOrderStore.receiveGoods(po1.uuid, po1Items.map((item) => ({
+      po_item_uuid: item.uuid,
+      item_uuid: item.item_uuid!,
+      ordered_quantity: item.quantity,
+      received_quantity: item.quantity,
+    })));
+
+    // PO 2: Partially received
+    const po2 = await this.purchaseOrderStore.addPurchaseOrder(
+      {
+        party_uuid: sFresh.uuid,
+        po_date: daysAgo(5),
+        expected_delivery_date: daysAgo(0),
+        status: 'sent',
+        total_amount: 37600,
+        total_tax: 0,
+        discount: 0,
+        notes: 'Weekly grocery restock',
+      },
+      [
+        { item_uuid: pRice.uuid, quantity: 40, price: 380, discount: 0, total: 15200 },
+        { item_uuid: pOil.uuid, quantity: 30, price: 620, discount: 0, total: 18600 },
+        { item_uuid: pPen.uuid, quantity: 30, price: 90, discount: 0, total: 2700 },
+      ],
+    );
+
+    // Partial receive — only rice delivered so far
+    const po2Items = await this.purchaseOrderStore.getPurchaseOrderItems(po2.uuid);
+    const riceItem = po2Items.find((i) => i.item_uuid === pRice.uuid);
+    if (riceItem) {
+      await this.purchaseOrderStore.receiveGoods(po2.uuid, [{
+        po_item_uuid: riceItem.uuid,
+        item_uuid: riceItem.item_uuid!,
+        ordered_quantity: riceItem.quantity,
+        received_quantity: 25,
+      }]);
+    }
+
+    // PO 3: Draft — not yet sent
+    await this.purchaseOrderStore.addPurchaseOrder(
+      {
+        party_uuid: sGlobal.uuid,
+        po_date: daysAgo(1),
+        expected_delivery_date: Date.now() + 7 * 86400000,
+        status: 'draft',
+        total_amount: 8800,
+        total_tax: 0,
+        discount: 0,
+        notes: 'Stationery reorder for next month',
+      },
+      [
+        { item_uuid: pPen.uuid, quantity: 40, price: 90, discount: 0, total: 3600 },
+        { item_uuid: pNotebook.uuid, quantity: 80, price: 55, discount: 0, total: 4400 },
+      ],
+    );
+
+    // ─── Overdue transactions for Aging Report ───────
+    // Sale to Rahman — overdue 45 days
+    await this.transactionStore.addTransaction(
+      {
+        type: ETransactionType.SALES,
+        party_uuid: cRahman.uuid,
+        transaction_date: daysAgo(75),
+        transaction_mode: 'Credit',
+        total_amount: 33000,
+        paid_amount: 0,
+        due_amount: 33000,
+        due_date: daysAgo(45),
+      },
+      [{ item_uuid: pPhone.uuid, quantity: 2, purchase_price: 14000, sales_price: 16500 }],
+    );
+
+    // Sale to Fatema — overdue 10 days
+    await this.transactionStore.addTransaction(
+      {
+        type: ETransactionType.SALES,
+        party_uuid: cFatema.uuid,
+        transaction_date: daysAgo(25),
+        transaction_mode: 'Credit',
+        total_amount: 7200,
+        paid_amount: 0,
+        due_amount: 7200,
+        due_date: daysAgo(10),
+      },
+      [{ item_uuid: pOil.uuid, quantity: 10, purchase_price: 620, sales_price: 720 }],
+    );
+
+    // Purchase from Global — overdue 65 days (for payable aging)
+    await this.transactionStore.addTransaction(
+      {
+        type: ETransactionType.PURCHASE,
+        party_uuid: sGlobal.uuid,
+        transaction_date: daysAgo(95),
+        transaction_mode: 'Credit',
+        total_amount: 70000,
+        paid_amount: 0,
+        due_amount: 70000,
+        due_date: daysAgo(65),
+      },
+      [{ item_uuid: pPhone.uuid, quantity: 5, purchase_price: 14000, sales_price: 16500 }],
     );
 
     console.log('[DemoSeed] Demo data seeded successfully!');
