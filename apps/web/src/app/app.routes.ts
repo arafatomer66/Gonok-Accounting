@@ -234,6 +234,13 @@ export const appRoutes: Route[] = [
           ),
       },
       {
+        path: 'tasks',
+        loadComponent: () =>
+          import('./features/tasks/tasks.component').then(
+            (m) => m.TasksComponent,
+          ),
+      },
+      {
         path: 'crm',
         loadChildren: () =>
           import('./features/crm/crm.routes').then((m) => m.CRM_ROUTES),

@@ -14,3 +14,4 @@ export * from './payroll.model.js';
 export * from './delivery.model.js';
 export * from './crm.model.js';
 export * from './purchase-order.model.js';
+export * from './task.model.js';

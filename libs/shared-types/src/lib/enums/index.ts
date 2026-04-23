@@ -6,3 +6,4 @@ export * from './user-role.enum.js';
 export * from './duration-type.enum.js';
 export * from './crm.enum.js';
 export * from './purchase-order.enum.js';
+export * from './task.enum.js';

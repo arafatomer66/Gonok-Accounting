@@ -1,0 +1,275 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.page-header__actions {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.view-toggle {
+  display: flex;
+  gap: $space-1;
+  background: $color-gray-100;
+  padding: $space-1;
+  border-radius: $radius-md;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: $space-4;
+  margin-bottom: $space-5;
+}
+
+.summary-card {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  text-align: center;
+
+  &__label {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    margin-bottom: $space-1;
+  }
+
+  &__value {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+
+    &--info { color: $color-info; }
+    &--warning { color: $color-warning; }
+    &--success { color: $color-success; }
+    &--danger { color: $color-danger; }
+  }
+}
+
+.filters {
+  display: flex;
+  gap: $space-3;
+  margin-bottom: $space-5;
+  flex-wrap: wrap;
+}
+
+.filter-search {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-select {
+  min-width: 160px;
+}
+
+// ─── Kanban Board ───────────────────────────────────
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $space-4;
+  min-height: 400px;
+
+  @media (max-width: $breakpoint-lg) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kanban-column {
+  background: $color-gray-50;
+  border-radius: $radius-lg;
+  border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  transition: border-color $transition-fast;
+
+  &--drag-over {
+    border-color: $color-primary;
+    background: $color-primary-50;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $space-3 $space-4;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__count {
+    background: $color-gray-200;
+    color: $color-text-secondary;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    padding: $space-1 $space-2;
+    border-radius: $radius-full;
+    min-width: 24px;
+    text-align: center;
+  }
+
+  &__body {
+    flex: 1;
+    padding: $space-3;
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    overflow-y: auto;
+  }
+
+  &__empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-text-muted;
+    font-size: $font-size-sm;
+  }
+}
+
+// ─── Kanban Card ────────────────────────────────────
+.kanban-card {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-3;
+  cursor: grab;
+  transition: box-shadow $transition-fast, transform $transition-fast;
+  user-select: none;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    cursor: grabbing;
+    box-shadow: $shadow-lg;
+  }
+
+  &--overdue {
+    border-left: 3px solid $color-danger;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $space-2;
+  }
+
+  &__no {
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+    font-family: monospace;
+  }
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text;
+    line-height: $line-height-tight;
+    margin-bottom: $space-2;
+    word-break: break-word;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: $font-size-xs;
+  }
+
+  &__assignee {
+    color: $color-text-secondary;
+
+    &--none {
+      color: $color-text-muted;
+      font-style: italic;
+    }
+  }
+
+  &__due {
+    color: $color-text-secondary;
+
+    &--overdue {
+      color: $color-danger;
+      font-weight: $font-weight-semibold;
+    }
+  }
+}
+
+// ─── Priority Badges ────────────────────────────────
+.badge--low {
+  background: $color-gray-100;
+  color: $color-gray-600;
+}
+
+.badge--medium {
+  background: $color-info-light;
+  color: $color-info;
+}
+
+.badge--high {
+  background: $color-warning-light;
+  color: $color-warning;
+}
+
+.badge--urgent {
+  background: $color-danger-light;
+  color: $color-danger;
+}
+
+.badge--sm {
+  font-size: $font-size-xs;
+  padding: 1px $space-2;
+  border-radius: $radius-full;
+  font-weight: $font-weight-medium;
+}
+
+// ─── List View ──────────────────────────────────────
+.form-input--inline {
+  padding: $space-1 $space-2;
+  font-size: $font-size-sm;
+  border-radius: $radius-sm;
+  width: auto;
+  min-width: 120px;
+}
+
+.row--overdue {
+  background: $color-danger-light;
+}
+
+// ─── Modal footer ───────────────────────────────────
+.modal__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal__footer-right {
+  display: flex;
+  gap: $space-2;
+  margin-left: auto;
+}
+
+// ─── Form Row ───────────────────────────────────────
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-4;
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
+  }
+}

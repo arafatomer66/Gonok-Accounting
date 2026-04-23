@@ -98,7 +98,8 @@
     "crm_section": "CRM",
     "crm": "CRM",
     "purchase_orders": "Purchase Orders",
-    "aging_report": "Aging Report"
+    "aging_report": "Aging Report",
+    "tasks": "Tasks"
   },
   "dashboard": {
     "total_sales": "Total Sales",
@@ -397,6 +398,35 @@
     "days_61_90": "61-90 days",
     "days_90_plus": "90+ days",
     "no_data": "No outstanding dues found"
+  },
+  "task": {
+    "title": "Tasks",
+    "new": "New Task",
+    "edit": "Edit Task",
+    "kanban": "Board",
+    "list": "List",
+    "task_no": "Task #",
+    "task_title": "Title",
+    "description": "Description",
+    "assignee": "Assignee",
+    "status": "Status",
+    "priority": "Priority",
+    "due_date": "Due Date",
+    "todo": "To Do",
+    "in_progress": "In Progress",
+    "in_review": "In Review",
+    "done": "Done",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent",
+    "no_tasks": "No tasks yet",
+    "overdue": "Overdue",
+    "unassigned": "Unassigned",
+    "all_assignees": "All Assignees",
+    "all_priorities": "All Priorities",
+    "search_placeholder": "Search tasks...",
+    "delete_confirm": "Delete this task? This cannot be undone."
   },
   "sync": {
     "synced": "Synced",

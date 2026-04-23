@@ -128,6 +128,7 @@ export class SidebarComponent {
         { labelKey: 'menu.expenses', icon: '💳', route: '/expenses' },
         { labelKey: 'menu.recurring_expenses', icon: '🔄', route: '/recurring-expenses' },
         { labelKey: 'menu.payroll', icon: '💼', route: '/payroll' },
+        { labelKey: 'menu.tasks', icon: '✅', route: '/tasks' },
       ],
     },
     {

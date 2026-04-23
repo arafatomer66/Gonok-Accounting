@@ -31,4 +31,5 @@ export enum ETables {
   PURCHASE_ORDER_ITEM = 'purchase_order_item',
   GOODS_RECEIPT_NOTE = 'goods_receipt_note',
   GOODS_RECEIPT_NOTE_ITEM = 'goods_receipt_note_item',
+  TASK = 'task',
 }

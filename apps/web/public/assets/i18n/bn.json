@@ -98,7 +98,8 @@
     "crm_section": "সিআরএম",
     "crm": "সিআরএম",
     "purchase_orders": "ক্রয় আদেশ",
-    "aging_report": "এজিং রিপোর্ট"
+    "aging_report": "এজিং রিপোর্ট",
+    "tasks": "কাজ"
   },
   "dashboard": {
     "total_sales": "মোট বিক্রয়",
@@ -397,6 +398,35 @@
     "days_61_90": "৬১-৯০ দিন",
     "days_90_plus": "৯০+ দিন",
     "no_data": "কোন বকেয়া পাওয়া যায়নি"
+  },
+  "task": {
+    "title": "কাজ",
+    "new": "নতুন কাজ",
+    "edit": "কাজ সম্পাদনা",
+    "kanban": "বোর্ড",
+    "list": "তালিকা",
+    "task_no": "কাজ #",
+    "task_title": "শিরোনাম",
+    "description": "বিবরণ",
+    "assignee": "দায়িত্বপ্রাপ্ত",
+    "status": "অবস্থা",
+    "priority": "অগ্রাধিকার",
+    "due_date": "শেষ তারিখ",
+    "todo": "করতে হবে",
+    "in_progress": "চলমান",
+    "in_review": "পর্যালোচনায়",
+    "done": "সম্পন্ন",
+    "low": "কম",
+    "medium": "মাঝারি",
+    "high": "বেশি",
+    "urgent": "জরুরি",
+    "no_tasks": "এখনও কোনো কাজ নেই",
+    "overdue": "মেয়াদোত্তীর্ণ",
+    "unassigned": "অনির্ধারিত",
+    "all_assignees": "সব দায়িত্বপ্রাপ্ত",
+    "all_priorities": "সব অগ্রাধিকার",
+    "search_placeholder": "কাজ খুঁজুন...",
+    "delete_confirm": "এই কাজটি মুছে ফেলবেন? এটি পূর্বাবস্থায় ফেরানো যাবে না।"
   },
   "sync": {
     "synced": "সিঙ্ক হয়েছে",
