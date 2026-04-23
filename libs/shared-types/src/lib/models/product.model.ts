@@ -28,6 +28,8 @@ export interface IProduct extends IBaseModel, ICouchDoc {
   mfg_date: number | null;
   serial_no: string | null;
   size: string | null;
+  reorder_level: number;
+  reorder_quantity: number;
 }
 
 export interface ICategory extends IBaseModel, ICouchDoc {

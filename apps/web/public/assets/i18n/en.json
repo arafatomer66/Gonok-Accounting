@@ -98,6 +98,8 @@
     "crm_section": "CRM",
     "crm": "CRM",
     "purchase_orders": "Purchase Orders",
+    "stock_transfers": "Stock Transfers",
+    "reorder_alerts": "Reorder Alerts",
     "aging_report": "Aging Report",
     "tasks": "Tasks"
   },
@@ -129,7 +131,9 @@
     "save_success": "Product saved",
     "name_required": "Product name is required",
     "duplicate_name": "Product with same name already exists",
-    "duplicate_code": "Product with same code already exists"
+    "duplicate_code": "Product with same code already exists",
+    "reorder_level": "Reorder Level",
+    "reorder_quantity": "Reorder Qty"
   },
   "unit": {
     "full_name": "Full Name",
@@ -427,6 +431,44 @@
     "all_priorities": "All Priorities",
     "search_placeholder": "Search tasks...",
     "delete_confirm": "Delete this task? This cannot be undone."
+  },
+  "stock_transfer": {
+    "title": "Stock Transfers",
+    "new": "New Transfer",
+    "edit": "Edit Transfer",
+    "transfer_no": "Transfer #",
+    "from_branch": "From Branch",
+    "to_branch": "To Branch",
+    "transfer_date": "Transfer Date",
+    "status": "Status",
+    "draft": "Draft",
+    "in_transit": "In Transit",
+    "received": "Received",
+    "cancelled": "Cancelled",
+    "dispatch": "Dispatch",
+    "receive": "Receive",
+    "items": "Items",
+    "notes": "Notes",
+    "no_transfers": "No stock transfers yet",
+    "dispatch_confirm": "Dispatch this transfer? Stock will be deducted.",
+    "receive_confirm": "Mark this transfer as received?",
+    "cancel_confirm": "Cancel this transfer? Stock will be restored.",
+    "delete_confirm": "Delete this draft transfer?",
+    "same_branch_error": "Source and destination must be different",
+    "insufficient_stock": "Insufficient stock for",
+    "save_draft": "Save Draft",
+    "save_dispatch": "Save & Dispatch"
+  },
+  "reorder": {
+    "title": "Reorder Alerts",
+    "reorder_level": "Reorder Level",
+    "reorder_quantity": "Reorder Quantity",
+    "current_stock": "Current Stock",
+    "deficit": "Deficit",
+    "critical": "Critical",
+    "low_stock": "Low Stock",
+    "all_ok": "All products are above reorder levels.",
+    "create_po": "Create PO"
   },
   "sync": {
     "synced": "Synced",

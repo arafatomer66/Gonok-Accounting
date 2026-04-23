@@ -60,6 +60,16 @@ export const CatalogStore = signalStore(
             0,
           ),
       ),
+      lowStockProducts: computed(() =>
+        store.products().filter(
+          (p) => p.reorder_level > 0 && p.quantity <= p.reorder_level,
+        ),
+      ),
+      lowStockCount: computed(() =>
+        store.products().filter(
+          (p) => p.reorder_level > 0 && p.quantity <= p.reorder_level,
+        ).length,
+      ),
       customers: computed(() =>
         store
           .parties()
@@ -229,6 +239,8 @@ export const CatalogStore = signalStore(
           mfg_date: data.mfg_date ?? null,
           serial_no: data.serial_no ?? null,
           size: null,
+          reorder_level: data.reorder_level ?? 0,
+          reorder_quantity: data.reorder_quantity ?? 0,
           created_at: now,
           updated_at: now,
           created_by: null,

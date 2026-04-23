@@ -7,3 +7,4 @@ export * from './duration-type.enum.js';
 export * from './crm.enum.js';
 export * from './purchase-order.enum.js';
 export * from './task.enum.js';
+export * from './stock-transfer.enum.js';

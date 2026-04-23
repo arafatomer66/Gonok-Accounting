@@ -32,4 +32,6 @@ export enum ETables {
   GOODS_RECEIPT_NOTE = 'goods_receipt_note',
   GOODS_RECEIPT_NOTE_ITEM = 'goods_receipt_note_item',
   TASK = 'task',
+  STOCK_TRANSFER = 'stock_transfer',
+  STOCK_TRANSFER_ITEM = 'stock_transfer_item',
 }

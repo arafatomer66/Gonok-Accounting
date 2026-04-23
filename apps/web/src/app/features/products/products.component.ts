@@ -46,7 +46,12 @@ import { IProduct } from '@org/shared-types';
               <td>{{ product.code || '-' }}</td>
               <td class="col-amount">{{ product.sales_price | number:'1.2-2' }}</td>
               <td class="col-amount">{{ product.purchase_price | number:'1.2-2' }}</td>
-              <td class="col-amount">{{ product.quantity }}</td>
+              <td class="col-amount">
+                {{ product.quantity }}
+                @if (product.reorder_level > 0 && product.quantity <= product.reorder_level) {
+                  <span class="badge badge--danger badge--sm" style="margin-left:4px;font-size:10px;padding:1px 6px;">Low</span>
+                }
+              </td>
               <td>
                 <span class="badge" [class.badge--success]="product.active" [class.badge--secondary]="!product.active">
                   {{ product.active ? 'Active' : 'Inactive' }}

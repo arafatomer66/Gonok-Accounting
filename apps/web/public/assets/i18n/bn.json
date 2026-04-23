@@ -98,6 +98,8 @@
     "crm_section": "সিআরএম",
     "crm": "সিআরএম",
     "purchase_orders": "ক্রয় আদেশ",
+    "stock_transfers": "স্টক স্থানান্তর",
+    "reorder_alerts": "পুনঃঅর্ডার সতর্কতা",
     "aging_report": "এজিং রিপোর্ট",
     "tasks": "কাজ"
   },
@@ -129,7 +131,9 @@
     "save_success": "পণ্য সেভ হয়েছে",
     "name_required": "পণ্যের নাম অবশ্যই দিতে হবে",
     "duplicate_name": "একই নামে পণ্য আছে",
-    "duplicate_code": "একই কোডে পণ্য আছে"
+    "duplicate_code": "একই কোডে পণ্য আছে",
+    "reorder_level": "পুনঃঅর্ডার স্তর",
+    "reorder_quantity": "পুনঃঅর্ডার পরিমাণ"
   },
   "unit": {
     "full_name": "পূর্ণ নাম",
@@ -427,6 +431,44 @@
     "all_priorities": "সব অগ্রাধিকার",
     "search_placeholder": "কাজ খুঁজুন...",
     "delete_confirm": "এই কাজটি মুছে ফেলবেন? এটি পূর্বাবস্থায় ফেরানো যাবে না।"
+  },
+  "stock_transfer": {
+    "title": "স্টক স্থানান্তর",
+    "new": "নতুন স্থানান্তর",
+    "edit": "স্থানান্তর সম্পাদনা",
+    "transfer_no": "স্থানান্তর #",
+    "from_branch": "উৎস শাখা",
+    "to_branch": "গন্তব্য শাখা",
+    "transfer_date": "স্থানান্তর তারিখ",
+    "status": "অবস্থা",
+    "draft": "খসড়া",
+    "in_transit": "পরিবহনে",
+    "received": "গৃহীত",
+    "cancelled": "বাতিল",
+    "dispatch": "প্রেরণ",
+    "receive": "গ্রহণ",
+    "items": "আইটেম",
+    "notes": "মন্তব্য",
+    "no_transfers": "এখনও কোনো স্টক স্থানান্তর নেই",
+    "dispatch_confirm": "এই স্থানান্তর প্রেরণ করবেন? স্টক কমানো হবে।",
+    "receive_confirm": "এই স্থানান্তর গৃহীত হিসেবে চিহ্নিত করবেন?",
+    "cancel_confirm": "এই স্থানান্তর বাতিল করবেন? স্টক পুনরুদ্ধার হবে।",
+    "delete_confirm": "এই খসড়া স্থানান্তর মুছবেন?",
+    "same_branch_error": "উৎস ও গন্তব্য শাখা আলাদা হতে হবে",
+    "insufficient_stock": "অপর্যাপ্ত স্টক",
+    "save_draft": "খসড়া সংরক্ষণ",
+    "save_dispatch": "সংরক্ষণ ও প্রেরণ"
+  },
+  "reorder": {
+    "title": "পুনঃঅর্ডার সতর্কতা",
+    "reorder_level": "পুনঃঅর্ডার স্তর",
+    "reorder_quantity": "পুনঃঅর্ডার পরিমাণ",
+    "current_stock": "বর্তমান স্টক",
+    "deficit": "ঘাটতি",
+    "critical": "জটিল",
+    "low_stock": "কম স্টক",
+    "all_ok": "সব পণ্য পুনঃঅর্ডার স্তরের উপরে।",
+    "create_po": "পিও তৈরি"
   },
   "sync": {
     "synced": "সিঙ্ক হয়েছে",

@@ -1,0 +1,134 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.status-tabs {
+  display: flex;
+  gap: $space-1;
+  margin-bottom: $space-5;
+  overflow-x: auto;
+  background: $color-gray-100;
+  padding: $space-1;
+  border-radius: $radius-md;
+}
+
+.status-tab {
+  padding: $space-2 $space-4;
+  border: none;
+  background: transparent;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  transition: all $transition-fast;
+
+  &--active {
+    background: $color-surface;
+    color: $color-primary;
+    box-shadow: $shadow-sm;
+  }
+
+  &__count {
+    background: $color-gray-200;
+    color: $color-text-secondary;
+    font-size: $font-size-xs;
+    padding: 1px $space-2;
+    border-radius: $radius-full;
+    margin-left: $space-1;
+  }
+
+  &--active &__count {
+    background: $color-primary-50;
+    color: $color-primary;
+  }
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: $space-4;
+  margin-bottom: $space-5;
+}
+
+.summary-card {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  text-align: center;
+
+  &__label {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    margin-bottom: $space-1;
+  }
+
+  &__value {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+
+    &--warning { color: $color-warning; }
+    &--success { color: $color-success; }
+    &--danger { color: $color-danger; }
+  }
+}
+
+.text-mono {
+  font-family: monospace;
+  font-size: $font-size-sm;
+}
+
+.item-add-row {
+  display: flex;
+  gap: $space-2;
+  align-items: center;
+
+  .form-input { flex: 1; }
+
+  .item-qty-input {
+    width: 80px;
+    flex: none;
+  }
+}
+
+.form-input--inline {
+  padding: $space-1 $space-2;
+  font-size: $font-size-sm;
+  border-radius: $radius-sm;
+  width: 80px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-4;
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.modal__footer-right {
+  display: flex;
+  gap: $space-2;
+  margin-left: auto;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-3;
+  font-size: $font-size-sm;
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detail-full {
+  grid-column: 1 / -1;
+}
+
+.mt-3 {
+  margin-top: $space-4;
+}

@@ -234,6 +234,20 @@ export const appRoutes: Route[] = [
           ),
       },
       {
+        path: 'stock-transfers',
+        loadComponent: () =>
+          import('./features/stock-transfers/stock-transfers.component').then(
+            (m) => m.StockTransfersComponent,
+          ),
+      },
+      {
+        path: 'reorder-alerts',
+        loadComponent: () =>
+          import('./features/reorder-alerts/reorder-alerts.component').then(
+            (m) => m.ReorderAlertsComponent,
+          ),
+      },
+      {
         path: 'tasks',
         loadComponent: () =>
           import('./features/tasks/tasks.component').then(

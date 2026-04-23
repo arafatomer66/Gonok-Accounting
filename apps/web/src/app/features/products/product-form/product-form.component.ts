@@ -90,6 +90,17 @@ import { IProduct, ICategory, IUnit } from '@org/shared-types';
 
           <div class="form-row">
             <div class="form-group">
+              <label class="form-label">Reorder Level</label>
+              <input class="form-input" type="number" [(ngModel)]="reorderLevel" name="reorderLevel" step="1" min="0" placeholder="0 = disabled" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Reorder Qty</label>
+              <input class="form-input" type="number" [(ngModel)]="reorderQuantity" name="reorderQuantity" step="1" min="0" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
               <label class="form-label">Batch No.</label>
               <input class="form-input" type="text" [(ngModel)]="batchNo" name="batchNo" />
             </div>
@@ -203,6 +214,8 @@ export class ProductFormComponent implements OnInit {
   serialNo = '';
   mfgDate = '';
   expDate = '';
+  reorderLevel = 0;
+  reorderQuantity = 0;
   description = '';
   active = true;
 
@@ -223,6 +236,8 @@ export class ProductFormComponent implements OnInit {
       this.serialNo = p.serial_no || '';
       this.mfgDate = p.mfg_date ? new Date(p.mfg_date).toISOString().split('T')[0] : '';
       this.expDate = p.exp_date ? new Date(p.exp_date).toISOString().split('T')[0] : '';
+      this.reorderLevel = p.reorder_level || 0;
+      this.reorderQuantity = p.reorder_quantity || 0;
       this.description = p.description || '';
       this.active = p.active;
     }
@@ -306,6 +321,8 @@ export class ProductFormComponent implements OnInit {
       serial_no: this.serialNo.trim() || null,
       mfg_date: this.mfgDate ? new Date(this.mfgDate).getTime() : null,
       exp_date: this.expDate ? new Date(this.expDate).getTime() : null,
+      reorder_level: this.reorderLevel || 0,
+      reorder_quantity: this.reorderQuantity || 0,
       description: this.description.trim() || null,
       active: this.active,
     };

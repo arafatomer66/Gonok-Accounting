@@ -83,6 +83,10 @@ Chart.register(...registerables);
         <div class="card__label">Overdue Payables</div>
         <div class="card__value" [class.card__value--danger]="overduePayableCount() > 0">{{ overduePayableCount() }}</div>
       </div>
+      <div class="card card--stat">
+        <div class="card__label">Low Stock Items</div>
+        <div class="card__value" [class.card__value--danger]="catalogStore.lowStockCount() > 0">{{ catalogStore.lowStockCount() }}</div>
+      </div>
     </div>
 
     <!-- Charts Row -->
