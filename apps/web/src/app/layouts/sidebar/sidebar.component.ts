@@ -100,7 +100,6 @@ export class SidebarComponent {
       items: [
         { labelKey: 'menu.sales', icon: '🛒', route: '/sales' },
         { labelKey: 'menu.quotations', icon: '📄', route: '/quotations' },
-        { labelKey: 'menu.deliveries', icon: '🚚', route: '/deliveries' },
         { labelKey: 'menu.sales_return', icon: '↩️', route: '/sales-return' },
         { labelKey: 'menu.payment_in', icon: '💰', route: '/payment-in' },
       ],
@@ -110,7 +109,6 @@ export class SidebarComponent {
       items: [
         { labelKey: 'menu.purchase', icon: '📦', route: '/purchase' },
         { labelKey: 'menu.purchase_orders', icon: '📋', route: '/purchase-orders' },
-        { labelKey: 'menu.stock_transfers', icon: '🔀', route: '/stock-transfers' },
         { labelKey: 'menu.purchase_return', icon: '↩️', route: '/purchase-return' },
         { labelKey: 'menu.payment_out', icon: '💸', route: '/payment-out' },
       ],
@@ -119,6 +117,14 @@ export class SidebarComponent {
       titleKey: 'menu.crm_section',
       items: [
         { labelKey: 'menu.crm', icon: '🤝', route: '/crm' },
+      ],
+    },
+    {
+      titleKey: 'menu.logistics_section',
+      items: [
+        { labelKey: 'menu.logistics', icon: '🚛', route: '/logistics' },
+        { labelKey: 'menu.deliveries', icon: '🚚', route: '/deliveries' },
+        { labelKey: 'menu.stock_transfers', icon: '🔀', route: '/stock-transfers' },
       ],
     },
     {

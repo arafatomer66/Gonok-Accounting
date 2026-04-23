@@ -8,6 +8,7 @@ import { CrmStore } from '../stores/crm.store';
 import { PurchaseOrderStore } from '../stores/purchase-order.store';
 import { TaskStore } from '../stores/task.store';
 import { StockTransferStore } from '../stores/stock-transfer.store';
+import { LogisticsStore } from '../stores/logistics.store';
 
 @Injectable({ providedIn: 'root' })
 export class BusinessSwitchService {
@@ -19,6 +20,7 @@ export class BusinessSwitchService {
   private purchaseOrderStore = inject(PurchaseOrderStore);
   private taskStore = inject(TaskStore);
   private stockTransferStore = inject(StockTransferStore);
+  private logisticsStore = inject(LogisticsStore);
   private router = inject(Router);
 
   async switchTo(uuid: string): Promise<void> {
@@ -32,6 +34,7 @@ export class BusinessSwitchService {
     this.purchaseOrderStore.reset();
     this.taskStore.reset();
     this.stockTransferStore.reset();
+    this.logisticsStore.reset();
 
     // Reload with new business data
     await Promise.all([
@@ -42,6 +45,7 @@ export class BusinessSwitchService {
       this.purchaseOrderStore.loadAll(),
       this.taskStore.loadAll(),
       this.stockTransferStore.loadAll(),
+      this.logisticsStore.loadAll(),
     ]);
 
     // Navigate to dashboard

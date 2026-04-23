@@ -34,4 +34,7 @@ export enum ETables {
   TASK = 'task',
   STOCK_TRANSFER = 'stock_transfer',
   STOCK_TRANSFER_ITEM = 'stock_transfer_item',
+  VEHICLE = 'vehicle',
+  TRIP = 'trip',
+  TRIP_STOP = 'trip_stop',
 }

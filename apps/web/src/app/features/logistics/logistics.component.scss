@@ -1,0 +1,299 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.view-tabs {
+  display: flex;
+  gap: $space-1;
+  margin-bottom: $space-5;
+  background: $color-gray-100;
+  padding: $space-1;
+  border-radius: $radius-md;
+}
+
+.view-tab {
+  padding: $space-2 $space-4;
+  border: none;
+  background: transparent;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  transition: all $transition-fast;
+
+  &--active {
+    background: $color-surface;
+    color: $color-primary;
+    box-shadow: $shadow-sm;
+  }
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: $space-4;
+  margin-bottom: $space-5;
+}
+
+.summary-card {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  text-align: center;
+
+  &__label {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    margin-bottom: $space-1;
+  }
+
+  &__value {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    &--success { color: $color-success; }
+    &--warning { color: $color-warning; }
+    &--info { color: $color-info; }
+    &--danger { color: $color-danger; }
+  }
+}
+
+.section-title {
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  margin-bottom: $space-3;
+}
+
+.section-header {
+  display: flex;
+  gap: $space-3;
+  align-items: center;
+  margin-bottom: $space-4;
+}
+
+// ─── Trip Cards ────────────────────────
+.trip-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: $space-4;
+  margin-bottom: $space-5;
+}
+
+.trip-card {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  transition: box-shadow $transition-fast;
+
+  &:hover { box-shadow: $shadow-md; }
+
+  &--active {
+    border-left: 3px solid $color-warning;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $space-3;
+  }
+
+  &__no {
+    font-family: monospace;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__body {
+    margin-bottom: $space-3;
+  }
+
+  &__detail {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    margin-bottom: $space-1;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-2;
+  }
+}
+
+// ─── Vehicle Cards ─────────────────────
+.vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: $space-4;
+}
+
+.vehicle-card {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  padding: $space-4;
+
+  &--maintenance { border-left: 3px solid $color-warning; }
+  &--inactive { opacity: 0.6; }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $space-2;
+  }
+
+  &__name {
+    font-weight: $font-weight-semibold;
+    font-size: $font-size-base;
+  }
+
+  &__plate {
+    font-family: monospace;
+    font-size: $font-size-sm;
+    color: $color-primary;
+    margin-bottom: $space-2;
+  }
+
+  &__detail {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    margin-bottom: $space-1;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-2;
+    margin-top: $space-3;
+    border-top: 1px solid $color-border;
+    padding-top: $space-3;
+  }
+}
+
+// ─── Status Tabs ───────────────────────
+.status-tabs {
+  display: flex;
+  gap: $space-1;
+  margin-bottom: $space-4;
+  overflow-x: auto;
+  background: $color-gray-100;
+  padding: $space-1;
+  border-radius: $radius-md;
+}
+
+.status-tab {
+  padding: $space-2 $space-4;
+  border: none;
+  background: transparent;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  transition: all $transition-fast;
+
+  &--active {
+    background: $color-surface;
+    color: $color-primary;
+    box-shadow: $shadow-sm;
+  }
+}
+
+// ─── Stop Timeline ─────────────────────
+.stop-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.stop-item {
+  display: flex;
+  gap: $space-3;
+  align-items: flex-start;
+  padding: $space-3;
+  background: $color-gray-50;
+  border-radius: $radius-md;
+  border-left: 3px solid $color-gray-300;
+
+  &--completed { border-left-color: $color-success; background: rgba($color-success, 0.05); }
+  &--skipped { border-left-color: $color-warning; opacity: 0.7; }
+
+  &__marker {
+    width: 28px;
+    height: 28px;
+    border-radius: $radius-full;
+    background: $color-primary;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    flex-shrink: 0;
+  }
+
+  &--completed &__marker { background: $color-success; }
+  &--skipped &__marker { background: $color-warning; }
+
+  &__content { flex: 1; }
+
+  &__name {
+    font-weight: $font-weight-medium;
+    font-size: $font-size-sm;
+  }
+
+  &__address {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    margin-top: $space-1;
+  }
+
+  &__time {
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-1;
+  }
+}
+
+// ─── Forms ─────────────────────────────
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-4;
+  @media (max-width: $breakpoint-sm) { grid-template-columns: 1fr; }
+}
+
+.stop-add-row {
+  display: flex;
+  gap: $space-2;
+  .form-input { flex: 1; }
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-3;
+  font-size: $font-size-sm;
+  @media (max-width: $breakpoint-sm) { grid-template-columns: 1fr; }
+}
+
+.text-mono { font-family: monospace; font-size: $font-size-sm; }
+.mt-4 { margin-top: $space-5; }
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: $space-6;
+  color: $color-text-muted;
+}

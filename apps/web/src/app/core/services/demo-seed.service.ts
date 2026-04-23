@@ -3,7 +3,12 @@ import { CatalogStore } from '../stores/catalog.store';
 import { TransactionStore } from '../stores/transaction.store';
 import { ExpenseStore } from '../stores/expense.store';
 import { PurchaseOrderStore } from '../stores/purchase-order.store';
-import { ETransactionType, EPartyType } from '@org/shared-types';
+import { StockTransferStore } from '../stores/stock-transfer.store';
+import { LogisticsStore } from '../stores/logistics.store';
+import { DeliveryStore } from '../stores/delivery.store';
+import { AuthStore } from '../stores/auth.store';
+import { PouchDbService } from './pouchdb.service';
+import { ETransactionType, EPartyType, ETables } from '@org/shared-types';
 
 @Injectable({ providedIn: 'root' })
 export class DemoSeedService {
@@ -11,6 +16,11 @@ export class DemoSeedService {
   private transactionStore = inject(TransactionStore);
   private expenseStore = inject(ExpenseStore);
   private purchaseOrderStore = inject(PurchaseOrderStore);
+  private stockTransferStore = inject(StockTransferStore);
+  private logisticsStore = inject(LogisticsStore);
+  private deliveryStore = inject(DeliveryStore);
+  private authStore = inject(AuthStore);
+  private pouchDb = inject(PouchDbService);
 
   async seed(): Promise<void> {
     // Skip if data already exists
@@ -33,6 +43,8 @@ export class DemoSeedService {
       mrp_price: 17000,
       stock_count: 25,
       item_wise_tax: 5,
+      reorder_level: 10,
+      reorder_quantity: 20,
     });
 
     const pCharger = await this.catalogStore.addProduct({
@@ -43,6 +55,8 @@ export class DemoSeedService {
       sales_price: 550,
       mrp_price: 600,
       stock_count: 50,
+      reorder_level: 20,
+      reorder_quantity: 30,
     });
 
     const pRice = await this.catalogStore.addProduct({
@@ -63,6 +77,8 @@ export class DemoSeedService {
       sales_price: 720,
       mrp_price: 750,
       stock_count: 40,
+      reorder_level: 15,
+      reorder_quantity: 25,
     });
 
     const pPen = await this.catalogStore.addProduct({
@@ -465,6 +481,232 @@ export class DemoSeedService {
       },
       [{ item_uuid: pPhone.uuid, quantity: 5, purchase_price: 14000, sales_price: 16500 }],
     );
+
+    // ─── Branches ─────────────────────────────────
+    const bizUuid = this.authStore.activeBusinessUuid()!;
+    const now = Date.now();
+
+    const branchMain = {
+      uuid: crypto.randomUUID(),
+      table_type: ETables.BRANCH,
+      business_uuid: bizUuid,
+      name: 'Main Warehouse - Mirpur',
+      address: 'Mirpur 10, Dhaka',
+      phone: '01711111111',
+      is_main: true,
+      created_at: now,
+      updated_at: now,
+    };
+    await this.pouchDb.put(ETables.BRANCH, branchMain.uuid, branchMain as unknown as Record<string, unknown>);
+
+    const branchUttara = {
+      uuid: crypto.randomUUID(),
+      table_type: ETables.BRANCH,
+      business_uuid: bizUuid,
+      name: 'Uttara Branch',
+      address: 'Uttara Sector 7, Dhaka',
+      phone: '01722222222',
+      is_main: false,
+      created_at: now,
+      updated_at: now,
+    };
+    await this.pouchDb.put(ETables.BRANCH, branchUttara.uuid, branchUttara as unknown as Record<string, unknown>);
+
+    const branchBanani = {
+      uuid: crypto.randomUUID(),
+      table_type: ETables.BRANCH,
+      business_uuid: bizUuid,
+      name: 'Banani Outlet',
+      address: 'Banani Road 11, Dhaka',
+      phone: '01733333333',
+      is_main: false,
+      created_at: now,
+      updated_at: now,
+    };
+    await this.pouchDb.put(ETables.BRANCH, branchBanani.uuid, branchBanani as unknown as Record<string, unknown>);
+
+    // ─── Stock Transfers ────────────────────────────
+    // Transfer 1: Received (completed)
+    const st1 = await this.stockTransferStore.addTransfer(
+      {
+        from_branch_uuid: branchMain.uuid,
+        from_branch_name: branchMain.name,
+        to_branch_uuid: branchUttara.uuid,
+        to_branch_name: branchUttara.name,
+        transfer_date: daysAgo(5),
+        notes: 'Weekly restock for Uttara branch',
+      },
+      [
+        { item_uuid: pRice.uuid, item_name: pRice.name, quantity: 10, unit: 'kg' },
+        { item_uuid: pOil.uuid, item_name: pOil.name, quantity: 5, unit: 'pcs' },
+      ],
+    );
+    await this.stockTransferStore.dispatchTransfer(st1.uuid);
+    await this.stockTransferStore.receiveTransfer(st1.uuid);
+
+    // Transfer 2: In transit
+    const st2 = await this.stockTransferStore.addTransfer(
+      {
+        from_branch_uuid: branchMain.uuid,
+        from_branch_name: branchMain.name,
+        to_branch_uuid: branchBanani.uuid,
+        to_branch_name: branchBanani.name,
+        transfer_date: daysAgo(1),
+        notes: 'Sending chargers and pens to Banani',
+      },
+      [
+        { item_uuid: pCharger.uuid, item_name: pCharger.name, quantity: 10, unit: 'pcs' },
+        { item_uuid: pPen.uuid, item_name: pPen.name, quantity: 20, unit: 'box' },
+      ],
+    );
+    await this.stockTransferStore.dispatchTransfer(st2.uuid);
+
+    // Transfer 3: Draft
+    await this.stockTransferStore.addTransfer(
+      {
+        from_branch_uuid: branchUttara.uuid,
+        from_branch_name: branchUttara.name,
+        to_branch_uuid: branchMain.uuid,
+        to_branch_name: branchMain.name,
+        transfer_date: Date.now() + 2 * 86400000,
+        notes: 'Return excess notebooks',
+      },
+      [
+        { item_uuid: pNotebook.uuid, item_name: pNotebook.name, quantity: 15, unit: 'pcs' },
+      ],
+    );
+
+    // ─── Vehicles ───────────────────────────────────
+    const vVan = await this.logisticsStore.addVehicle({
+      name: 'Delivery Van 1',
+      plate_number: 'ঢাকা মেট্রো গ-১২৩৪',
+      vehicle_type: 'Van',
+      capacity: '1.5 ton',
+      driver_name: 'Rahim Mia',
+      driver_phone: '01755555555',
+    });
+
+    const vPickup = await this.logisticsStore.addVehicle({
+      name: 'Pickup Truck',
+      plate_number: 'ঢাকা মেট্রো ঘ-৫৬৭৮',
+      vehicle_type: 'Pickup',
+      capacity: '800 kg',
+      driver_name: 'Kamal Hossain',
+      driver_phone: '01766666666',
+    });
+
+    await this.logisticsStore.addVehicle({
+      name: 'Delivery Bike',
+      plate_number: 'ঢাকা মেট্রো চ-৯০১২',
+      vehicle_type: 'Motorcycle',
+      capacity: '30 kg',
+      driver_name: 'Sohel Ahmed',
+      driver_phone: '01777777777',
+    });
+
+    await this.logisticsStore.addVehicle({
+      name: 'Old Van (Under Repair)',
+      plate_number: 'ঢাকা মেট্রো গ-৩৪৫৬',
+      vehicle_type: 'Van',
+      capacity: '1 ton',
+      status: 'maintenance' as any,
+      notes: 'Engine repair — expected back next week',
+    });
+
+    // ─── Deliveries (for trips) ─────────────────────
+    const del1 = await this.deliveryStore.addDelivery(
+      {
+        party_uuid: cRahman.uuid,
+        delivery_date: daysAgo(0),
+        delivery_address: 'Mirpur 10, Dhaka',
+        status: 'pending',
+      },
+      [
+        { item_uuid: pPhone.uuid, ordered_quantity: 3, delivered_quantity: 3 },
+        { item_uuid: pCharger.uuid, ordered_quantity: 5, delivered_quantity: 5 },
+      ],
+    );
+
+    const del2 = await this.deliveryStore.addDelivery(
+      {
+        party_uuid: cKarim.uuid,
+        delivery_date: daysAgo(0),
+        delivery_address: 'Uttara Sector 3, Dhaka',
+        status: 'pending',
+      },
+      [
+        { item_uuid: pRice.uuid, ordered_quantity: 10, delivered_quantity: 10 },
+        { item_uuid: pOil.uuid, ordered_quantity: 5, delivered_quantity: 5 },
+      ],
+    );
+
+    const del3 = await this.deliveryStore.addDelivery(
+      {
+        party_uuid: cFatema.uuid,
+        delivery_date: daysAgo(0),
+        delivery_address: 'Banani Road 11, Dhaka',
+        status: 'pending',
+      },
+      [
+        { item_uuid: pPen.uuid, ordered_quantity: 15, delivered_quantity: 15 },
+        { item_uuid: pNotebook.uuid, ordered_quantity: 20, delivered_quantity: 20 },
+      ],
+    );
+
+    // ─── Trips ──────────────────────────────────────
+    // Trip 1: In progress (today's run)
+    const trip1 = await this.logisticsStore.addTrip(
+      {
+        vehicle_uuid: vVan.uuid,
+        vehicle_name: vVan.name,
+        driver_name: 'Rahim Mia',
+        driver_phone: '01755555555',
+        trip_date: daysAgo(0),
+        origin: 'Main Warehouse - Mirpur',
+        destination: 'Uttara',
+      },
+      [
+        { party_name: 'Rahman Electronics', address: 'Mirpur 10, Dhaka', delivery_uuid: del1.uuid },
+        { party_name: 'Karim General Store', address: 'Uttara Sector 3, Dhaka', delivery_uuid: del2.uuid },
+      ],
+    );
+    await this.logisticsStore.startTrip(trip1.uuid);
+
+    // Trip 2: Planned for tomorrow
+    await this.logisticsStore.addTrip(
+      {
+        vehicle_uuid: vPickup.uuid,
+        vehicle_name: vPickup.name,
+        driver_name: 'Kamal Hossain',
+        driver_phone: '01766666666',
+        trip_date: Date.now() + 86400000,
+        origin: 'Main Warehouse - Mirpur',
+        destination: 'Banani',
+      },
+      [
+        { party_name: 'Fatema Stationery', address: 'Banani Road 11, Dhaka', delivery_uuid: del3.uuid },
+        { party_name: 'Banani Outlet (Branch Restock)', address: 'Banani Road 11, Dhaka' },
+      ],
+    );
+
+    // Trip 3: Completed yesterday
+    const trip3 = await this.logisticsStore.addTrip(
+      {
+        vehicle_uuid: vVan.uuid,
+        vehicle_name: vVan.name,
+        driver_name: 'Rahim Mia',
+        driver_phone: '01755555555',
+        trip_date: daysAgo(1),
+        origin: 'Main Warehouse',
+        destination: 'Mirpur & Uttara',
+      },
+      [
+        { party_name: 'Mirpur Grocery', address: 'Mirpur 2, Dhaka' },
+        { party_name: 'Uttara Mart', address: 'Uttara Sector 10, Dhaka' },
+      ],
+    );
+    await this.logisticsStore.startTrip(trip3.uuid);
+    await this.logisticsStore.completeTrip(trip3.uuid);
 
     console.log('[DemoSeed] Demo data seeded successfully!');
   }

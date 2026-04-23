@@ -8,3 +8,4 @@ export * from './crm.enum.js';
 export * from './purchase-order.enum.js';
 export * from './task.enum.js';
 export * from './stock-transfer.enum.js';
+export * from './logistics.enum.js';

@@ -234,6 +234,13 @@ export const appRoutes: Route[] = [
           ),
       },
       {
+        path: 'logistics',
+        loadComponent: () =>
+          import('./features/logistics/logistics.component').then(
+            (m) => m.LogisticsComponent,
+          ),
+      },
+      {
         path: 'stock-transfers',
         loadComponent: () =>
           import('./features/stock-transfers/stock-transfers.component').then(
