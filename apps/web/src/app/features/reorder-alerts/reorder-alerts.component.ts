@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { CatalogStore } from '../../core/stores/catalog.store';
 import { SearchInputComponent } from '../../shared/components/search-input/search-input.component';
-import { IProduct } from '@org/shared-types';
+
 
 @Component({
   selector: 'gonok-reorder-alerts',

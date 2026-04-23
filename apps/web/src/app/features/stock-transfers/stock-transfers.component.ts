@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DecimalPipe, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { StockTransferStore } from '../../core/stores/stock-transfer.store';
 import { CatalogStore } from '../../core/stores/catalog.store';
@@ -39,7 +39,6 @@ interface FormItem {
   standalone: true,
   imports: [
     FormsModule,
-    DecimalPipe,
     DatePipe,
     TranslateModule,
     SearchInputComponent,
