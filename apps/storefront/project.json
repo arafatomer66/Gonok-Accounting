@@ -24,7 +24,8 @@
         ],
         "styles": [
           "apps/storefront/src/styles.scss"
-        ]
+        ],
+        "baseHref": "/shop/"
       },
       "configurations": {
         "production": {
