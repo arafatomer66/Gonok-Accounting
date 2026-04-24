@@ -1,10 +1,29 @@
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import { AuthService } from '../services/auth.service';
 
 const router = Router();
 const authService = new AuthService();
 
-router.post('/register', async (req, res) => {
+// Strict rate limiting on auth endpoints to prevent OTP brute force
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // 10 attempts per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many attempts, please try again after 15 minutes' },
+});
+
+// Stricter limit on OTP verification (5 attempts per 15 min)
+const otpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many OTP attempts, please try again after 15 minutes' },
+});
+
+router.post('/register', authLimiter, async (req, res) => {
   try {
     const { phone, name } = req.body;
     if (!phone || !name) {
@@ -17,7 +36,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
   try {
     const { phone } = req.body;
     if (!phone) {
@@ -30,7 +49,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.post('/verify-otp', async (req, res) => {
+router.post('/verify-otp', otpLimiter, async (req, res) => {
   try {
     const { phone, otp } = req.body;
     if (!phone || !otp) {
@@ -43,7 +62,7 @@ router.post('/verify-otp', async (req, res) => {
   }
 });
 
-router.post('/refresh-token', async (req, res) => {
+router.post('/refresh-token', authLimiter, async (req, res) => {
   try {
     const { refresh_token } = req.body;
     if (!refresh_token) {
