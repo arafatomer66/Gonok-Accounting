@@ -31,6 +31,7 @@ import { IProduct } from '@org/shared-types';
       <table class="table">
         <thead>
           <tr>
+            <th class="col-img"></th>
             <th>Name</th>
             <th>Code</th>
             <th class="text-right">Sale Price</th>
@@ -43,6 +44,13 @@ import { IProduct } from '@org/shared-types';
         <tbody>
           @for (product of filteredProducts(); track product.uuid) {
             <tr>
+              <td class="col-img">
+                @if (product.image_url) {
+                  <img class="product-thumb" [src]="product.image_url" [alt]="product.name" />
+                } @else {
+                  <div class="product-thumb product-thumb--empty"></div>
+                }
+              </td>
               <td>{{ product.name }}</td>
               <td>{{ product.code || '-' }}</td>
               <td class="col-amount">{{ product.sales_price | number:'1.2-2' }}</td>
@@ -74,7 +82,7 @@ import { IProduct } from '@org/shared-types';
             </tr>
           } @empty {
             <tr>
-              <td colspan="7" class="text-center text-muted">No products found.</td>
+              <td colspan="8" class="text-center text-muted">No products found.</td>
             </tr>
           }
         </tbody>
@@ -107,6 +115,23 @@ import { IProduct } from '@org/shared-types';
   `,
   styles: `
     @use '../../../styles/abstracts/variables' as *;
+
+    .col-img {
+      width: 40px;
+      padding: 4px !important;
+    }
+
+    .product-thumb {
+      width: 36px;
+      height: 36px;
+      border-radius: $radius-sm;
+      object-fit: cover;
+      display: block;
+
+      &--empty {
+        background: $color-gray-100;
+      }
+    }
 
     .action-btns {
       display: flex;

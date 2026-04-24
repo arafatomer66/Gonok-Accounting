@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { PouchDbService } from '../../core/services/pouchdb.service';
 import { AuthStore } from '../../core/stores/auth.store';
+import { ImageUploadComponent } from '../../shared/components/image-upload/image-upload.component';
 import {
   ISettings,
   IItemSettings,
@@ -93,7 +94,7 @@ const DEFAULT_EXPORT_SETTINGS: IExportSettings = {
 @Component({
   selector: 'gonok-settings',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, ImageUploadComponent],
   template: `
     <div class="page-header">
       <h1 class="page-header__title">Settings</h1>
@@ -279,6 +280,17 @@ const DEFAULT_EXPORT_SETTINGS: IExportSettings = {
               <input type="checkbox" [(ngModel)]="exp.show_company_logo" name="expLogo" />
               <span>Show Company Logo</span>
             </label>
+            @if (exp.show_company_logo) {
+              <div class="full-width logo-upload">
+                <gonok-image-upload
+                  label="Upload Business Logo"
+                  folder="business-logos"
+                  [currentUrl]="businessLogoUrl"
+                  (uploaded)="onLogoUploaded($event)"
+                  (removed)="onLogoRemoved()"
+                />
+              </div>
+            }
             <label class="toggle-row">
               <input type="checkbox" [(ngModel)]="exp.show_footer" name="expFooter" />
               <span>Show Footer</span>
@@ -448,6 +460,10 @@ const DEFAULT_EXPORT_SETTINGS: IExportSettings = {
       font-size: $font-size-sm;
       font-weight: $font-weight-medium;
     }
+
+    .logo-upload {
+      max-width: 200px;
+    }
   `,
 })
 export class SettingsComponent implements OnInit {
@@ -459,6 +475,9 @@ export class SettingsComponent implements OnInit {
   saving = signal(false);
   saved = signal(false);
   activeTab = signal<'item' | 'party' | 'transaction' | 'export' | 'storefront'>('item');
+
+  // Business logo
+  businessLogoUrl: string | null = null;
 
   // Storefront settings
   storefrontSlug = '';
@@ -502,6 +521,7 @@ export class SettingsComponent implements OnInit {
         if (res.success && res.data) {
           this.storefrontSlug = res.data.slug || '';
           this.storefrontEnabled = res.data.storefront_enabled || false;
+          this.businessLogoUrl = res.data.logo_url || null;
         }
       },
     });
@@ -576,6 +596,22 @@ export class SettingsComponent implements OnInit {
           this.storefrontError.set(err.error?.error || 'Failed to save storefront settings');
         },
       });
+  }
+
+  onLogoUploaded(url: string): void {
+    this.businessLogoUrl = url;
+    const bizUuid = this.authStore.activeBusinessUuid();
+    if (bizUuid) {
+      this.http.put(`/api/v1/businesses/${bizUuid}`, { logo_url: url }).subscribe();
+    }
+  }
+
+  onLogoRemoved(): void {
+    this.businessLogoUrl = null;
+    const bizUuid = this.authStore.activeBusinessUuid();
+    if (bizUuid) {
+      this.http.put(`/api/v1/businesses/${bizUuid}`, { logo_url: '' }).subscribe();
+    }
   }
 
   copyStorefrontLink(): void {

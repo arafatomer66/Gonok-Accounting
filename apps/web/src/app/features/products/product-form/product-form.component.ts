@@ -4,12 +4,13 @@ import { CatalogStore } from '../../../core/stores/catalog.store';
 import { BranchStore } from '../../../core/stores/branch.store';
 import { CategoryModalComponent } from '../category-modal/category-modal.component';
 import { UnitModalComponent } from '../unit-modal/unit-modal.component';
+import { ImageUploadComponent } from '../../../shared/components/image-upload/image-upload.component';
 import { IProduct, ICategory, IUnit } from '@org/shared-types';
 
 @Component({
   selector: 'gonok-product-form',
   standalone: true,
-  imports: [FormsModule, CategoryModalComponent, UnitModalComponent],
+  imports: [FormsModule, CategoryModalComponent, UnitModalComponent, ImageUploadComponent],
   template: `
     <div class="modal-backdrop" (click)="cancelled.emit()">
       <div class="modal modal--wide" (click)="$event.stopPropagation()">
@@ -148,6 +149,17 @@ import { IProduct, ICategory, IUnit } from '@org/shared-types';
           </div>
 
           <div class="form-group">
+            <label class="form-label">Product Image</label>
+            <gonok-image-upload
+              label="Upload Product Image"
+              folder="products"
+              [currentUrl]="imageUrl"
+              (uploaded)="onImageUploaded($event)"
+              (removed)="onImageRemoved()"
+            />
+          </div>
+
+          <div class="form-group">
             <label class="form-check">
               <input type="checkbox" [(ngModel)]="active" name="active" />
               <span>Active</span>
@@ -259,6 +271,7 @@ export class ProductFormComponent implements OnInit {
   reorderLevel = 0;
   reorderQuantity = 0;
   description = '';
+  imageUrl: string | null = null;
   active = true;
   branchStockMap: Record<string, number> = {};
 
@@ -287,6 +300,7 @@ export class ProductFormComponent implements OnInit {
       this.reorderLevel = p.reorder_level || 0;
       this.reorderQuantity = p.reorder_quantity || 0;
       this.description = p.description || '';
+      this.imageUrl = p.image_url || null;
       this.active = p.active;
     }
   }
@@ -372,6 +386,7 @@ export class ProductFormComponent implements OnInit {
       reorder_level: this.reorderLevel || 0,
       reorder_quantity: this.reorderQuantity || 0,
       description: this.description.trim() || null,
+      image_url: this.imageUrl,
       active: this.active,
       stock_by_branch: this.branchStore.hasBranches() ? { ...this.branchStockMap } : {},
     };
@@ -387,6 +402,14 @@ export class ProductFormComponent implements OnInit {
       this.error.set('Failed to save product');
       this.saving.set(false);
     }
+  }
+
+  onImageUploaded(url: string): void {
+    this.imageUrl = url;
+  }
+
+  onImageRemoved(): void {
+    this.imageUrl = null;
   }
 
   onCategoryCreated(cat: ICategory): void {
