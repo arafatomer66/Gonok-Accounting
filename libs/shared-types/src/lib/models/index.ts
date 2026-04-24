@@ -17,3 +17,4 @@ export * from './purchase-order.model.js';
 export * from './task.model.js';
 export * from './stock-transfer.model.js';
 export * from './logistics.model.js';
+export * from './branch.model.js';

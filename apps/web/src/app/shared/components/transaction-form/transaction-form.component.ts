@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { CatalogStore } from '../../../core/stores/catalog.store';
 import { TransactionStore } from '../../../core/stores/transaction.store';
+import { BranchStore } from '../../../core/stores/branch.store';
 import { PouchDbService } from '../../../core/services/pouchdb.service';
 import { AuthStore } from '../../../core/stores/auth.store';
 import {
@@ -62,6 +63,19 @@ interface ItemLine {
             </div>
           </div>
 
+          @if (branchStore.hasBranches()) {
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Branch *</label>
+                <select class="form-input" [(ngModel)]="branchUuid" name="branchUuid">
+                  @for (branch of branchStore.branches(); track branch.uuid) {
+                    <option [value]="branch.uuid">{{ branch.name }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          }
+
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Date</label>
@@ -113,7 +127,7 @@ interface ItemLine {
                 <select class="form-input" [(ngModel)]="newItemUuid" name="newItem">
                   <option value="">-- Select Product --</option>
                   @for (p of catalogStore.products(); track p.uuid) {
-                    <option [value]="p.uuid">{{ p.name }} (Stock: {{ p.quantity }})</option>
+                    <option [value]="p.uuid">{{ p.name }} (Stock: {{ getProductStock(p) }})</option>
                   }
                 </select>
                 <input class="form-input form-input--sm" type="number" [(ngModel)]="newQty" name="newQty" placeholder="Qty" min="1" step="1" />
@@ -273,6 +287,7 @@ interface ItemLine {
 })
 export class TransactionFormComponent implements OnInit {
   catalogStore = inject(CatalogStore);
+  branchStore = inject(BranchStore);
   private transactionStore = inject(TransactionStore);
   private pouchDb = inject(PouchDbService);
   private authStore = inject(AuthStore);
@@ -289,6 +304,7 @@ export class TransactionFormComponent implements OnInit {
   itemLines = signal<ItemLine[]>([]);
 
   // Form fields
+  branchUuid = '';
   transactionMode = ETransactionMode.CASH;
   partyUuid = '';
   txDate = new Date().toISOString().split('T')[0];
@@ -366,7 +382,17 @@ export class TransactionFormComponent implements OnInit {
     () => Math.max(0, this.totalAmount() - this.paidAmount),
   );
 
+  getProductStock(product: { quantity: number; stock_by_branch?: Record<string, number> }): number {
+    if (this.branchUuid && product.stock_by_branch) {
+      return product.stock_by_branch[this.branchUuid] ?? 0;
+    }
+    return product.quantity;
+  }
+
   async ngOnInit(): Promise<void> {
+    // Initialize branch from active branch
+    this.branchUuid = this.branchStore.activeBranchUuid() ?? '';
+
     // Load bank accounts
     const bizUuid = this.authStore.activeBusinessUuid();
     if (bizUuid) {
@@ -376,6 +402,7 @@ export class TransactionFormComponent implements OnInit {
 
     const t = this.transaction();
     if (t) {
+      this.branchUuid = t.branch_uuid || this.branchUuid;
       this.transactionMode = (t.transaction_mode as ETransactionMode) || ETransactionMode.CASH;
       this.partyUuid = t.party_uuid || '';
       this.txDate = t.transaction_date
@@ -536,6 +563,7 @@ export class TransactionFormComponent implements OnInit {
 
     const txData: Partial<ITransaction> = {
       type: this.txType(),
+      branch_uuid: this.branchUuid || null,
       party_uuid: this.partyUuid,
       transaction_date: new Date(this.txDate).getTime(),
       transaction_mode: this.transactionMode,

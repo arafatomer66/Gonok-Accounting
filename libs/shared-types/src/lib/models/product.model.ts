@@ -23,6 +23,7 @@ export interface IProduct extends IBaseModel, ICouchDoc {
   party_wise_rate: string | null;
   item_wise_tax: number;
   quantity: number;
+  stock_by_branch: Record<string, number>;
   batch_no: string | null;
   exp_date: number | null;
   mfg_date: number | null;

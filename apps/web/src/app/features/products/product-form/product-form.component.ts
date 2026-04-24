@@ -1,6 +1,7 @@
 import { Component, inject, input, output, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CatalogStore } from '../../../core/stores/catalog.store';
+import { BranchStore } from '../../../core/stores/branch.store';
 import { CategoryModalComponent } from '../category-modal/category-modal.component';
 import { UnitModalComponent } from '../unit-modal/unit-modal.component';
 import { IProduct, ICategory, IUnit } from '@org/shared-types';
@@ -72,10 +73,30 @@ import { IProduct, ICategory, IUnit } from '@org/shared-types';
               <input class="form-input" type="number" [(ngModel)]="mrpPrice" name="mrpPrice" step="0.01" min="0" />
             </div>
             <div class="form-group">
-              <label class="form-label">Opening Stock</label>
-              <input class="form-input" type="number" [(ngModel)]="stockCount" name="stockCount" step="1" min="0" />
+              <label class="form-label">{{ branchStore.hasBranches() ? 'Total Stock' : 'Opening Stock' }}</label>
+              <input class="form-input" type="number" [(ngModel)]="stockCount" name="stockCount" step="1" min="0" [readonly]="branchStore.hasBranches() && !product()" />
             </div>
           </div>
+
+          @if (branchStore.hasBranches() && !product()) {
+            <div class="branch-alloc">
+              <label class="form-label">Allocate Stock by Branch</label>
+              @for (branch of branchStore.branches(); track branch.uuid) {
+                <div class="branch-alloc__row">
+                  <span class="branch-alloc__name">{{ branch.name }}</span>
+                  <input
+                    class="form-input form-input--sm"
+                    type="number"
+                    [ngModel]="branchStockMap[branch.uuid] || 0"
+                    (ngModelChange)="setBranchStock(branch.uuid, $event)"
+                    [name]="'branch_' + branch.uuid"
+                    step="1"
+                    min="0"
+                  />
+                </div>
+              }
+            </div>
+          }
 
           <div class="form-row">
             <div class="form-group">
@@ -186,10 +207,31 @@ import { IProduct, ICategory, IUnit } from '@org/shared-types';
       cursor: pointer;
       input { width: 16px; height: 16px; }
     }
+
+    .branch-alloc {
+      margin-bottom: $space-4;
+      padding: $space-3;
+      background: $color-gray-50;
+      border-radius: $radius-md;
+    }
+
+    .branch-alloc__row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $space-1 0;
+      .form-input--sm { width: 100px; text-align: right; }
+    }
+
+    .branch-alloc__name {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+    }
   `,
 })
 export class ProductFormComponent implements OnInit {
   catalogStore = inject(CatalogStore);
+  branchStore = inject(BranchStore);
 
   product = input<IProduct | null>(null);
   saved = output<void>();
@@ -218,6 +260,12 @@ export class ProductFormComponent implements OnInit {
   reorderQuantity = 0;
   description = '';
   active = true;
+  branchStockMap: Record<string, number> = {};
+
+  setBranchStock(branchUuid: string, value: number): void {
+    this.branchStockMap = { ...this.branchStockMap, [branchUuid]: value || 0 };
+    this.stockCount = Object.values(this.branchStockMap).reduce((s, v) => s + v, 0);
+  }
 
   ngOnInit(): void {
     const p = this.product();
@@ -325,6 +373,7 @@ export class ProductFormComponent implements OnInit {
       reorder_quantity: this.reorderQuantity || 0,
       description: this.description.trim() || null,
       active: this.active,
+      stock_by_branch: this.branchStore.hasBranches() ? { ...this.branchStockMap } : {},
     };
 
     try {

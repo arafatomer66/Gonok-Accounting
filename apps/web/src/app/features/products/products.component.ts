@@ -1,6 +1,7 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { CatalogStore } from '../../core/stores/catalog.store';
+import { BranchStore } from '../../core/stores/branch.store';
 import { SearchInputComponent } from '../../shared/components/search-input/search-input.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ProductFormComponent } from './product-form/product-form.component';
@@ -50,6 +51,13 @@ import { IProduct } from '@org/shared-types';
                 {{ product.quantity }}
                 @if (product.reorder_level > 0 && product.quantity <= product.reorder_level) {
                   <span class="badge badge--danger badge--sm" style="margin-left:4px;font-size:10px;padding:1px 6px;">Low</span>
+                }
+                @if (branchStore.hasBranches() && product.stock_by_branch) {
+                  <div class="branch-stock-breakdown">
+                    @for (branch of branchStore.branches(); track branch.uuid) {
+                      <span class="branch-stock-item">{{ branch.name }}: {{ product.stock_by_branch[branch.uuid] ?? 0 }}</span>
+                    }
+                  </div>
                 }
               </td>
               <td>
@@ -121,10 +129,26 @@ import { IProduct } from '@org/shared-types';
       font-size: $font-size-sm;
       color: $color-text-secondary;
     }
+
+    .branch-stock-breakdown {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .branch-stock-item {
+      font-size: 10px;
+      color: $color-text-secondary;
+      background: $color-gray-100;
+      padding: 1px 6px;
+      border-radius: $radius-sm;
+    }
   `,
 })
 export class ProductsComponent implements OnInit {
   catalogStore = inject(CatalogStore);
+  branchStore = inject(BranchStore);
 
   searchTerm = signal('');
   showForm = signal(false);

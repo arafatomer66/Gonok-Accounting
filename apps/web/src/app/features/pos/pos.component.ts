@@ -6,6 +6,7 @@ import { CatalogStore } from '../../core/stores/catalog.store';
 import { TransactionStore } from '../../core/stores/transaction.store';
 import { AuthStore } from '../../core/stores/auth.store';
 import { IProduct, ITransaction, ITransactionItem, ETransactionType, ETransactionMode } from '@org/shared-types';
+import { BranchStore } from '../../core/stores/branch.store';
 
 interface CartItem {
   product: IProduct;
@@ -36,6 +37,17 @@ interface HeldSale {
           <span class="pos-date">{{ today | date:'EEE, dd MMM yyyy' }}</span>
         </div>
         <div class="pos-header__right">
+          @if (branchStore.hasBranches()) {
+            <select
+              class="pos-branch-select"
+              [value]="branchStore.activeBranchUuid()"
+              (change)="onBranchChange($event)"
+            >
+              @for (branch of branchStore.branches(); track branch.uuid) {
+                <option [value]="branch.uuid">{{ branch.name }}</option>
+              }
+            </select>
+          }
           @if (heldSales().length > 0) {
             <button class="pos-btn pos-btn--outline" (click)="showHeldPanel.set(!showHeldPanel())">
               🕐 Held ({{ heldSales().length }})
@@ -74,14 +86,14 @@ interface HeldSale {
             @for (product of filteredProducts(); track product.uuid) {
               <button
                 class="product-tile"
-                [class.product-tile--low-stock]="product.quantity <= 0"
+                [class.product-tile--low-stock]="getAvailableQty(product) <= 0"
                 (click)="addToCart(product)"
-                [disabled]="product.quantity <= 0"
+                [disabled]="getAvailableQty(product) <= 0"
               >
                 <div class="product-tile__name">{{ product.name }}</div>
                 <div class="product-tile__price">&#2547;{{ product.sales_price | number:'1.0-0' }}</div>
-                <div class="product-tile__stock" [class.text-danger]="product.quantity <= 0">
-                  {{ product.quantity > 0 ? product.quantity + ' in stock' : 'Out of stock' }}
+                <div class="product-tile__stock" [class.text-danger]="getAvailableQty(product) <= 0">
+                  {{ getAvailableQty(product) > 0 ? getAvailableQty(product) + ' in stock' : 'Out of stock' }}
                 </div>
                 @if (product.code) {
                   <div class="product-tile__code">{{ product.code }}</div>
@@ -349,6 +361,7 @@ interface HeldSale {
 })
 export class PosComponent implements OnInit {
   catalogStore = inject(CatalogStore);
+  branchStore = inject(BranchStore);
   private transactionStore = inject(TransactionStore);
   private authStore = inject(AuthStore);
   private router = inject(Router);
@@ -460,6 +473,13 @@ export class PosComponent implements OnInit {
     }
   }
 
+  onBranchChange(event: Event): void {
+    const uuid = (event.target as HTMLSelectElement).value;
+    this.branchStore.setActiveBranch(uuid);
+    // Clear cart when switching branches (stock availability may change)
+    this.clearCart();
+  }
+
   goBack(): void {
     this.router.navigate(['/dashboard']);
   }
@@ -468,14 +488,24 @@ export class PosComponent implements OnInit {
     this.isFullscreen.update((v) => !v);
   }
 
+  /** Get available stock — branch-specific if branches exist, otherwise global */
+  getAvailableQty(product: IProduct): number {
+    const branchUuid = this.branchStore.activeBranchUuid();
+    if (branchUuid && product.stock_by_branch) {
+      return product.stock_by_branch[branchUuid] ?? 0;
+    }
+    return product.quantity;
+  }
+
   // ─── Cart Operations ───
   addToCart(product: IProduct): void {
-    if (product.quantity <= 0) return;
+    const availQty = this.getAvailableQty(product);
+    if (availQty <= 0) return;
 
     this.cart.update((items) => {
       const existing = items.find((i) => i.product.uuid === product.uuid);
       if (existing) {
-        if (existing.quantity >= product.quantity) return items; // Don't exceed stock
+        if (existing.quantity >= availQty) return items; // Don't exceed stock
         return items.map((i) =>
           i.product.uuid === product.uuid
             ? { ...i, quantity: i.quantity + 1, total: (i.quantity + 1) * i.price }
@@ -496,7 +526,7 @@ export class PosComponent implements OnInit {
     // If search matches exactly one product by code, add it
     const term = this.searchTerm.toLowerCase();
     const match = this.catalogStore.products().find(
-      (p) => (p.code || '').toLowerCase() === term && p.quantity > 0,
+      (p) => (p.code || '').toLowerCase() === term && this.getAvailableQty(p) > 0,
     );
     if (match) {
       this.addToCart(match);
@@ -507,7 +537,7 @@ export class PosComponent implements OnInit {
   incrementQty(index: number): void {
     this.cart.update((items) => {
       const item = items[index];
-      if (item.quantity >= item.product.quantity) return items;
+      if (item.quantity >= this.getAvailableQty(item.product)) return items;
       return items.map((i, idx) =>
         idx === index
           ? { ...i, quantity: i.quantity + 1, total: (i.quantity + 1) * i.price }
@@ -534,7 +564,7 @@ export class PosComponent implements OnInit {
 
     this.cart.update((items) => {
       const item = items[index];
-      const qty = Math.min(value, item.product.quantity);
+      const qty = Math.min(value, this.getAvailableQty(item.product));
       return items.map((i, idx) =>
         idx === index
           ? { ...i, quantity: qty, total: qty * i.price }
@@ -621,6 +651,7 @@ export class PosComponent implements OnInit {
 
     const txData: Partial<ITransaction> = {
       type: ETransactionType.SALES,
+      branch_uuid: this.branchStore.activeBranchUuid() || null,
       party_uuid: this.selectedPartyUuid || null,
       transaction_date: Date.now(),
       transaction_mode: ETransactionMode.CASH,

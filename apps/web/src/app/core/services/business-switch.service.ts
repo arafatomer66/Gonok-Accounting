@@ -9,6 +9,7 @@ import { PurchaseOrderStore } from '../stores/purchase-order.store';
 import { TaskStore } from '../stores/task.store';
 import { StockTransferStore } from '../stores/stock-transfer.store';
 import { LogisticsStore } from '../stores/logistics.store';
+import { BranchStore } from '../stores/branch.store';
 
 @Injectable({ providedIn: 'root' })
 export class BusinessSwitchService {
@@ -21,6 +22,7 @@ export class BusinessSwitchService {
   private taskStore = inject(TaskStore);
   private stockTransferStore = inject(StockTransferStore);
   private logisticsStore = inject(LogisticsStore);
+  private branchStore = inject(BranchStore);
   private router = inject(Router);
 
   async switchTo(uuid: string): Promise<void> {
@@ -35,6 +37,10 @@ export class BusinessSwitchService {
     this.taskStore.reset();
     this.stockTransferStore.reset();
     this.logisticsStore.reset();
+    this.branchStore.reset();
+
+    // Reload branches first (other stores may depend on active branch)
+    await this.branchStore.loadAll();
 
     // Reload with new business data
     await Promise.all([

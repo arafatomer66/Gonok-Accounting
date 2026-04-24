@@ -6,9 +6,8 @@ import { PurchaseOrderStore } from '../stores/purchase-order.store';
 import { StockTransferStore } from '../stores/stock-transfer.store';
 import { LogisticsStore } from '../stores/logistics.store';
 import { DeliveryStore } from '../stores/delivery.store';
-import { AuthStore } from '../stores/auth.store';
-import { PouchDbService } from './pouchdb.service';
-import { ETransactionType, EPartyType, ETables } from '@org/shared-types';
+import { BranchStore } from '../stores/branch.store';
+import { ETransactionType, EPartyType } from '@org/shared-types';
 
 @Injectable({ providedIn: 'root' })
 export class DemoSeedService {
@@ -19,8 +18,7 @@ export class DemoSeedService {
   private stockTransferStore = inject(StockTransferStore);
   private logisticsStore = inject(LogisticsStore);
   private deliveryStore = inject(DeliveryStore);
-  private authStore = inject(AuthStore);
-  private pouchDb = inject(PouchDbService);
+  private branchStore = inject(BranchStore);
 
   async seed(): Promise<void> {
     // Skip if data already exists
@@ -483,47 +481,44 @@ export class DemoSeedService {
     );
 
     // ─── Branches ─────────────────────────────────
-    const bizUuid = this.authStore.activeBusinessUuid()!;
-    const now = Date.now();
-
-    const branchMain = {
-      uuid: crypto.randomUUID(),
-      table_type: ETables.BRANCH,
-      business_uuid: bizUuid,
+    const branchMain = await this.branchStore.addBranch({
       name: 'Main Warehouse - Mirpur',
       address: 'Mirpur 10, Dhaka',
       phone: '01711111111',
       is_main: true,
-      created_at: now,
-      updated_at: now,
-    };
-    await this.pouchDb.put(ETables.BRANCH, branchMain.uuid, branchMain as unknown as Record<string, unknown>);
+    });
 
-    const branchUttara = {
-      uuid: crypto.randomUUID(),
-      table_type: ETables.BRANCH,
-      business_uuid: bizUuid,
+    const branchUttara = await this.branchStore.addBranch({
       name: 'Uttara Branch',
       address: 'Uttara Sector 7, Dhaka',
       phone: '01722222222',
-      is_main: false,
-      created_at: now,
-      updated_at: now,
-    };
-    await this.pouchDb.put(ETables.BRANCH, branchUttara.uuid, branchUttara as unknown as Record<string, unknown>);
+    });
 
-    const branchBanani = {
-      uuid: crypto.randomUUID(),
-      table_type: ETables.BRANCH,
-      business_uuid: bizUuid,
+    const branchBanani = await this.branchStore.addBranch({
       name: 'Banani Outlet',
       address: 'Banani Road 11, Dhaka',
       phone: '01733333333',
-      is_main: false,
-      created_at: now,
-      updated_at: now,
-    };
-    await this.pouchDb.put(ETables.BRANCH, branchBanani.uuid, branchBanani as unknown as Record<string, unknown>);
+    });
+
+    // ─── Allocate stock by branch ────────────────
+    await this.catalogStore.updateProduct(pPhone.uuid, {
+      stock_by_branch: { [branchMain.uuid]: 15, [branchUttara.uuid]: 7, [branchBanani.uuid]: 3 },
+    });
+    await this.catalogStore.updateProduct(pCharger.uuid, {
+      stock_by_branch: { [branchMain.uuid]: 30, [branchUttara.uuid]: 12, [branchBanani.uuid]: 8 },
+    });
+    await this.catalogStore.updateProduct(pRice.uuid, {
+      stock_by_branch: { [branchMain.uuid]: 60, [branchUttara.uuid]: 25, [branchBanani.uuid]: 15 },
+    });
+    await this.catalogStore.updateProduct(pOil.uuid, {
+      stock_by_branch: { [branchMain.uuid]: 20, [branchUttara.uuid]: 12, [branchBanani.uuid]: 8 },
+    });
+    await this.catalogStore.updateProduct(pPen.uuid, {
+      stock_by_branch: { [branchMain.uuid]: 120, [branchUttara.uuid]: 50, [branchBanani.uuid]: 30 },
+    });
+    await this.catalogStore.updateProduct(pNotebook.uuid, {
+      stock_by_branch: { [branchMain.uuid]: 80, [branchUttara.uuid]: 40, [branchBanani.uuid]: 30 },
+    });
 
     // ─── Stock Transfers ────────────────────────────
     // Transfer 1: Received (completed)

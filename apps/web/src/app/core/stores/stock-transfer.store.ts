@@ -191,21 +191,19 @@ export const StockTransferStore = signalStore(
         const allItems = await pouchDb.findByBusiness<IStockTransferItem>(ETables.STOCK_TRANSFER_ITEM, bizUuid);
         const transferItems = allItems.filter((i) => i.transfer_uuid === uuid);
 
-        // Check stock availability
+        // Check stock availability at source branch
         for (const item of transferItems) {
           const product = catalogStore.products().find((p) => p.uuid === item.item_uuid);
-          if (!product || product.quantity < item.quantity) {
-            return false;
-          }
+          if (!product) return false;
+          const branchQty = product.stock_by_branch?.[existing.from_branch_uuid] ?? product.quantity;
+          if (branchQty < item.quantity) return false;
         }
 
-        // Deduct stock
+        // Deduct stock from source branch
         for (const item of transferItems) {
           const product = catalogStore.products().find((p) => p.uuid === item.item_uuid);
           if (product) {
-            await catalogStore.updateProduct(product.uuid, {
-              quantity: product.quantity - item.quantity,
-            });
+            await catalogStore.updateBranchStock(product.uuid, existing.from_branch_uuid, -item.quantity);
           }
         }
 
@@ -230,13 +228,11 @@ export const StockTransferStore = signalStore(
         const allItems = await pouchDb.findByBusiness<IStockTransferItem>(ETables.STOCK_TRANSFER_ITEM, bizUuid);
         const transferItems = allItems.filter((i) => i.transfer_uuid === uuid);
 
-        // Restore stock at destination (since we use global quantity)
+        // Add stock at destination branch
         for (const item of transferItems) {
           const product = catalogStore.products().find((p) => p.uuid === item.item_uuid);
           if (product) {
-            await catalogStore.updateProduct(product.uuid, {
-              quantity: product.quantity + item.quantity,
-            });
+            await catalogStore.updateBranchStock(product.uuid, existing.to_branch_uuid, item.quantity);
           }
         }
 
@@ -266,9 +262,7 @@ export const StockTransferStore = signalStore(
           for (const item of transferItems) {
             const product = catalogStore.products().find((p) => p.uuid === item.item_uuid);
             if (product) {
-              await catalogStore.updateProduct(product.uuid, {
-                quantity: product.quantity + item.quantity,
-              });
+              await catalogStore.updateBranchStock(product.uuid, existing.from_branch_uuid, item.quantity);
             }
           }
         }

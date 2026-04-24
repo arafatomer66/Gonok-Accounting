@@ -86,6 +86,7 @@ export const TransactionStore = signalStore(
       items: ITransactionItem[],
       type: ETransactionType,
       direction: 'apply' | 'reverse',
+      branchUuid?: string | null,
     ): void {
       if (
         type === ETransactionType.PAYMENT_IN ||
@@ -104,9 +105,14 @@ export const TransactionStore = signalStore(
         const shouldDecrease =
           (stockDecreases && direction === 'apply') ||
           (!stockDecreases && direction === 'reverse');
+        const delta = shouldDecrease ? -qty : qty;
 
-        const newQty = product.quantity + (shouldDecrease ? -qty : qty);
-        catalogStore.updateProduct(product.uuid, { quantity: newQty });
+        if (branchUuid) {
+          catalogStore.updateBranchStock(product.uuid, branchUuid, delta);
+        } else {
+          const newQty = product.quantity + delta;
+          catalogStore.updateProduct(product.uuid, { quantity: newQty });
+        }
       }
     }
 
@@ -197,7 +203,7 @@ export const TransactionStore = signalStore(
           uuid,
           table_type: ETables.TRANSACTION,
           business_uuid: bizUuid,
-          branch_uuid: null,
+          branch_uuid: data.branch_uuid ?? null,
           type: data.type ?? null,
           party_uuid: data.party_uuid ?? null,
           transaction_date: data.transaction_date ?? now,
@@ -244,7 +250,7 @@ export const TransactionStore = signalStore(
           uuid: crypto.randomUUID(),
           table_type: ETables.TRANSACTION_ITEM,
           business_uuid: bizUuid,
-          branch_uuid: null,
+          branch_uuid: transaction.branch_uuid,
           party_uuid: transaction.party_uuid,
           transaction_uuid: uuid,
           transaction_type: transaction.type,
@@ -270,7 +276,7 @@ export const TransactionStore = signalStore(
         await saveTransactionItems(txItems);
 
         // Update stock & balance
-        updateProductStock(txItems, type, 'apply');
+        updateProductStock(txItems, type, 'apply', transaction.branch_uuid);
         updatePartyBalance(transaction, 'apply');
 
         patchState(store, {
@@ -301,7 +307,7 @@ export const TransactionStore = signalStore(
         const prevItems = oldItems.filter(
           (i) => i.transaction_uuid === uuid,
         );
-        updateProductStock(prevItems, type, 'reverse');
+        updateProductStock(prevItems, type, 'reverse', existing.branch_uuid);
         updatePartyBalance(existing, 'reverse');
 
         // Delete old items
@@ -322,7 +328,7 @@ export const TransactionStore = signalStore(
           uuid: crypto.randomUUID(),
           table_type: ETables.TRANSACTION_ITEM,
           business_uuid: bizUuid,
-          branch_uuid: null,
+          branch_uuid: updated.branch_uuid,
           party_uuid: updated.party_uuid,
           transaction_uuid: uuid,
           transaction_type: updated.type,
@@ -348,7 +354,7 @@ export const TransactionStore = signalStore(
         await saveTransactionItems(txItems);
 
         // Apply new stock & balance
-        updateProductStock(txItems, type, 'apply');
+        updateProductStock(txItems, type, 'apply', updated.branch_uuid);
         updatePartyBalance(updated, 'apply');
 
         patchState(store, {
@@ -376,7 +382,7 @@ export const TransactionStore = signalStore(
         );
 
         // Reverse stock & balance
-        updateProductStock(txItems, type, 'reverse');
+        updateProductStock(txItems, type, 'reverse', existing.branch_uuid);
         updatePartyBalance(existing, 'reverse');
 
         // Delete items then transaction

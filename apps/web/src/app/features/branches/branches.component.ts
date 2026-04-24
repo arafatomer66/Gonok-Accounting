@@ -1,23 +1,10 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { PouchDbService } from '../../core/services/pouchdb.service';
-import { AuthStore } from '../../core/stores/auth.store';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { ETables } from '@org/shared-types';
-import { ActivityLogService } from '../../core/services/activity-log.service';
-
-interface IBranch {
-  uuid: string;
-  table_type: string;
-  business_uuid: string;
-  name: string;
-  address: string | null;
-  phone: string | null;
-  is_main: boolean;
-  created_at: number;
-  updated_at: number;
-}
+import { BranchStore } from '../../core/stores/branch.store';
+import { CatalogStore } from '../../core/stores/catalog.store';
+import { IBranch } from '@org/shared-types';
 
 @Component({
   selector: 'gonok-branches',
@@ -187,11 +174,10 @@ interface IBranch {
   `,
 })
 export class BranchesComponent implements OnInit {
-  private pouchDb = inject(PouchDbService);
-  private authStore = inject(AuthStore);
-  private activityLog = inject(ActivityLogService);
+  branchStore = inject(BranchStore);
+  private catalogStore = inject(CatalogStore);
 
-  branches = signal<IBranch[]>([]);
+  get branches() { return this.branchStore.branches; }
   showForm = signal(false);
   showDeleteConfirm = signal(false);
   editing = signal<IBranch | null>(null);
@@ -205,14 +191,9 @@ export class BranchesComponent implements OnInit {
   formIsMain = false;
 
   async ngOnInit(): Promise<void> {
-    await this.loadBranches();
-  }
-
-  private async loadBranches(): Promise<void> {
-    const bizUuid = this.authStore.activeBusiness()?.uuid;
-    if (!bizUuid) return;
-    const docs = await this.pouchDb.findByBusiness<IBranch>(ETables.BRANCH, bizUuid);
-    this.branches.set(docs.sort((a, b) => (b.is_main ? 1 : 0) - (a.is_main ? 1 : 0)));
+    if (!this.branchStore.initialized()) {
+      await this.branchStore.loadAll();
+    }
   }
 
   openForm(): void {
@@ -250,51 +231,29 @@ export class BranchesComponent implements OnInit {
     this.saving.set(true);
     this.formError.set('');
 
-    const bizUuid = this.authStore.activeBusiness()?.uuid;
-    if (!bizUuid) return;
-
-    const now = Date.now();
     const existingEdit = this.editing();
 
-    // If setting as main, unset others
-    if (this.formIsMain) {
-      for (const b of this.branches()) {
-        if (b.is_main && b.uuid !== existingEdit?.uuid) {
-          const updated = { ...b, is_main: false, updated_at: now };
-          await this.pouchDb.put(ETables.BRANCH, b.uuid, updated as unknown as Record<string, unknown>);
-        }
+    try {
+      if (existingEdit) {
+        await this.branchStore.updateBranch(existingEdit.uuid, {
+          name,
+          address: this.formAddress.trim() || null,
+          phone: this.formPhone.trim() || null,
+          is_main: this.formIsMain,
+        });
+      } else {
+        await this.branchStore.addBranch({
+          name,
+          address: this.formAddress.trim() || null,
+          phone: this.formPhone.trim() || null,
+          is_main: this.formIsMain,
+        });
       }
+      this.closeForm();
+    } catch {
+      this.formError.set('Failed to save branch');
     }
 
-    if (existingEdit) {
-      const updated: IBranch = {
-        ...existingEdit,
-        name,
-        address: this.formAddress.trim() || null,
-        phone: this.formPhone.trim() || null,
-        is_main: this.formIsMain,
-        updated_at: now,
-      };
-      await this.pouchDb.put(ETables.BRANCH, existingEdit.uuid, updated as unknown as Record<string, unknown>);
-      this.activityLog.log('update', 'branch', name);
-    } else {
-      const branch: IBranch = {
-        uuid: crypto.randomUUID(),
-        table_type: ETables.BRANCH,
-        business_uuid: bizUuid,
-        name,
-        address: this.formAddress.trim() || null,
-        phone: this.formPhone.trim() || null,
-        is_main: this.formIsMain,
-        created_at: now,
-        updated_at: now,
-      };
-      await this.pouchDb.put(ETables.BRANCH, branch.uuid, branch as unknown as Record<string, unknown>);
-      this.activityLog.log('create', 'branch', name);
-    }
-
-    await this.loadBranches();
-    this.closeForm();
     this.saving.set(false);
   }
 
@@ -306,9 +265,21 @@ export class BranchesComponent implements OnInit {
   async doDelete(): Promise<void> {
     const branch = this.deleting();
     if (branch) {
-      await this.pouchDb.remove(ETables.BRANCH, branch.uuid);
-      this.activityLog.log('delete', 'branch', branch.name);
-      await this.loadBranches();
+      // Check if any product has stock at this branch
+      const hasStock = this.catalogStore.products().some(
+        (p) => (p.stock_by_branch?.[branch.uuid] ?? 0) > 0,
+      );
+      if (hasStock) {
+        const proceed = confirm(
+          `Branch "${branch.name}" has stock allocated. Deleting will remove the stock allocation. Proceed?`,
+        );
+        if (!proceed) {
+          this.showDeleteConfirm.set(false);
+          this.deleting.set(null);
+          return;
+        }
+      }
+      await this.branchStore.deleteBranch(branch.uuid);
     }
     this.showDeleteConfirm.set(false);
     this.deleting.set(null);

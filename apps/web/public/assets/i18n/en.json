@@ -519,5 +519,13 @@
     "paused": "Paused",
     "error": "Sync Error",
     "offline": "Offline"
+  },
+  "branch": {
+    "select": "Select Branch",
+    "all": "All Branches",
+    "stock_at": "Stock at",
+    "allocate_stock": "Allocate Stock",
+    "no_branch": "No branch selected",
+    "stock_breakdown": "Stock Breakdown"
   }
 }

@@ -5,6 +5,7 @@ import { AuthStore } from '../../core/stores/auth.store';
 import { SyncService } from '../../core/services/sync.service';
 import { ConnectionService } from '../../core/services/connection.service';
 import { BusinessSwitchService } from '../../core/services/business-switch.service';
+import { BranchStore } from '../../core/stores/branch.store';
 
 @Component({
   selector: 'gonok-navbar',
@@ -44,6 +45,19 @@ import { BusinessSwitchService } from '../../core/services/business-switch.servi
           >
             @for (biz of authStore.businesses(); track biz.uuid) {
               <option [value]="biz.uuid">{{ biz.name_en || biz.name_bn }}</option>
+            }
+          </select>
+        }
+
+        <!-- Branch selector -->
+        @if (branchStore.hasBranches()) {
+          <select
+            class="navbar__branch-select"
+            [value]="branchStore.activeBranchUuid()"
+            (change)="onBranchChange($event)"
+          >
+            @for (branch of branchStore.branches(); track branch.uuid) {
+              <option [value]="branch.uuid">{{ branch.name }}</option>
             }
           </select>
         }
@@ -133,6 +147,22 @@ import { BusinessSwitchService } from '../../core/services/business-switch.servi
       }
     }
 
+    .navbar__branch-select {
+      padding: 5px $space-3;
+      border: 1px solid $color-primary;
+      border-radius: $radius-lg;
+      font-size: $font-size-sm;
+      background: rgba($color-primary, 0.05);
+      color: $color-primary;
+      font-weight: $font-weight-semibold;
+      max-width: 160px;
+      transition: border-color 150ms ease;
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba($color-primary, 0.12);
+      }
+    }
+
     .navbar__user {
       position: relative;
     }
@@ -180,6 +210,7 @@ import { BusinessSwitchService } from '../../core/services/business-switch.servi
 })
 export class NavbarComponent {
   authStore = inject(AuthStore);
+  branchStore = inject(BranchStore);
   syncService = inject(SyncService);
   connection = inject(ConnectionService);
   private router = inject(Router);
@@ -203,6 +234,11 @@ export class NavbarComponent {
   }
 
   private bizSwitch = inject(BusinessSwitchService);
+
+  onBranchChange(event: Event): void {
+    const uuid = (event.target as HTMLSelectElement).value;
+    this.branchStore.setActiveBranch(uuid);
+  }
 
   onBusinessChange(event: Event): void {
     const uuid = (event.target as HTMLSelectElement).value;

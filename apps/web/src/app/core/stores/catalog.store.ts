@@ -156,6 +156,18 @@ export const CatalogStore = signalStore(
             ),
           ]);
 
+        // Migrate products missing stock_by_branch
+        for (let i = 0; i < products.length; i++) {
+          if (products[i].stock_by_branch === undefined || products[i].stock_by_branch === null) {
+            products[i] = { ...products[i], stock_by_branch: {} };
+            await pouchDb.put(
+              ETables.PRODUCT,
+              products[i].uuid,
+              products[i] as unknown as Record<string, unknown>,
+            );
+          }
+        }
+
         // Seed default units if none exist
         if (units.length === 0) {
           const seeded: IUnit[] = [];
@@ -234,6 +246,7 @@ export const CatalogStore = signalStore(
           party_wise_rate: null,
           item_wise_tax: data.item_wise_tax ?? 0,
           quantity: data.stock_count ?? 0,
+          stock_by_branch: data.stock_by_branch ?? {},
           batch_no: data.batch_no ?? null,
           exp_date: data.exp_date ?? null,
           mfg_date: data.mfg_date ?? null,
@@ -279,6 +292,19 @@ export const CatalogStore = signalStore(
           ),
         });
         return updated;
+      },
+
+      async updateBranchStock(
+        productUuid: string,
+        branchUuid: string,
+        delta: number,
+      ): Promise<void> {
+        const product = store.products().find((p) => p.uuid === productUuid);
+        if (!product) return;
+        const stockByBranch = { ...(product.stock_by_branch ?? {}) };
+        stockByBranch[branchUuid] = (stockByBranch[branchUuid] ?? 0) + delta;
+        const quantity = Object.values(stockByBranch).reduce((s, v) => s + v, 0);
+        await this.updateProduct(productUuid, { stock_by_branch: stockByBranch, quantity });
       },
 
       async deleteProduct(uuid: string): Promise<void> {
