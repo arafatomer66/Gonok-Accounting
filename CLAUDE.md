@@ -239,21 +239,105 @@ async addThing(data: Partial<IThing>): Promise<IThing> {
 - Storefront dev proxy at `apps/storefront/proxy.conf.json` forwards `/api` to `localhost:3333`
 - Business `slug` and `storefront_enabled` columns are on the PostgreSQL `businesses` table
 
+## Production Architecture (Micro-Frontend)
+
+### How It Works End-to-End
+
+Gonok uses a **micro-frontend architecture** with two independent Angular apps sharing a single API and database layer:
+
+```
+Internet
+  │
+  ▼
+┌─────────────────────────────────────────────────────┐
+│  Caddy (HTTPS via Let's Encrypt)                    │
+│  - Auto-TLS for 13-234-68-147.sslip.io              │
+│  - HTTP → HTTPS redirect                            │
+│  - Reverse proxy → nginx (web container)            │
+└─────────────┬───────────────────────────────────────┘
+              ▼
+┌─────────────────────────────────────────────────────┐
+│  Nginx (web container, port 80 internal)            │
+│  ┌──────────────┐  ┌──────────────┐                 │
+│  │ /             │  │ /shop/*      │                 │
+│  │ Main App      │  │ Storefront   │                 │
+│  │ (Angular SPA) │  │ (Angular SPA)│                 │
+│  └──────────────┘  └──────────────┘                 │
+│  /api/*  → proxy to api:3333                        │
+│  /couchdb/* → proxy to couchdb:5984                 │
+└─────────────┬──────────────┬────────────────────────┘
+              ▼              ▼
+┌──────────────────┐  ┌──────────────┐
+│  Express API     │  │  CouchDB     │
+│  (port 3333)     │  │  (port 5984) │
+│  - Auth (JWT)    │  │  - Per-user  │
+│  - Storefront API│  │    databases │
+│  - TypeORM       │  │  - PouchDB   │
+└────────┬─────────┘  │    sync      │
+         ▼            └──────────────┘
+┌──────────────────┐
+│  PostgreSQL      │
+│  (port 5432)     │
+│  - Users         │
+│  - Businesses    │
+│  - Business_users│
+└──────────────────┘
+```
+
+### Data Flow by App
+
+**Main App (`/`)** — Private, requires login:
+1. User logs in → JWT tokens from API (PostgreSQL)
+2. PouchDB (browser IndexedDB) ↔ CouchDB (bidirectional live sync)
+3. All business data (products, sales, expenses) lives in PouchDB/CouchDB
+4. PostgreSQL only stores auth data (users, businesses, roles)
+
+**Storefront (`/shop/{slug}`)** — Public, no auth:
+1. Browser loads `/shop/{slug}` → nginx serves storefront Angular app
+2. Storefront calls `/api/v1/storefront/{slug}/products`
+3. API resolves: slug → PostgreSQL `businesses` table → owner UUID → CouchDB `gonok-{ownerUuid}`
+4. API reads products from CouchDB via `nano` library (server-side only)
+5. Products returned to storefront app for display
+
+### Service Worker & Micro-Frontend Isolation
+
+The main app registers an Angular service worker (PWA) at `/`. To prevent it from intercepting `/shop/*` requests and serving the main app's `index.html`, the service worker config (`apps/web/ngsw-config.json`) excludes `/shop/**` from `navigationUrls`:
+
+```json
+"navigationUrls": ["/**", "!/**/.*", "!/shop/**"]
+```
+
+Without this, navigating to `/shop/*` would load the main app (from the service worker cache), which would redirect to `/dashboard`.
+
+### Docker Compose Project Name
+
+The compose file sets `name: gonok` to ensure consistent volume names (`gonok_pgdata`, `gonok_couchdata`) across deployments. Without this, Docker auto-generates the project name from the directory name, which can change between environments and create new empty volumes (losing data).
+
 ## Deployment & CI/CD
 
 ### AWS Infrastructure
 - **EC2**: `13.234.68.147` (ap-south-1, t3.small, Ubuntu 22.04) — managed via `terraform/main.tf`
 - **SSH**: `ssh -i ~/.ssh/gonok.pem ubuntu@13.234.68.147`
 - **Security group**: Ports 80, 443, 22 open
+- **Domain**: `https://13-234-68-147.sslip.io` (sslip.io provides DNS for bare IPs)
 
 ### Docker (Production)
+
+5 services defined in `docker-compose.prod.yml`:
+
+| Service | Image | Ports | Purpose |
+|---------|-------|-------|---------|
+| caddy | `caddy:2-alpine` | 80, 443 (public) | HTTPS termination via Let's Encrypt |
+| web | `gonok-web` (nginx) | 80 (internal) | Serves main app + storefront, proxies API/CouchDB |
+| api | `gonok-api` (Node) | 3333 (internal) | Express API with TypeORM |
+| postgres | `postgres:16-alpine` | 5432 (internal) | Auth data (users, businesses) |
+| couchdb | `couchdb:3` | 5984 (internal) | Business data (products, transactions) |
+
 ```bash
 docker compose -f docker-compose.prod.yml up -d --build   # Build and start all services
 docker compose -f docker-compose.prod.yml logs api -f      # Tail API logs
 docker compose -f docker-compose.prod.yml ps               # Check service status
 ```
-
-**Services**: web (nginx, port 80), api (Express, port 3333 internal), postgres (5432 internal), couchdb (5984 internal)
 
 ### CI/CD Pipeline
 - **File**: `.github/workflows/deploy.yml`
@@ -264,22 +348,32 @@ docker compose -f docker-compose.prod.yml ps               # Check service statu
 ### First Deploy Checklist
 1. SSH into EC2: `ssh -i ~/.ssh/gonok.pem ubuntu@13.234.68.147`
 2. Clone repo: `git clone https://github.com/arafatomer66/Gonok-Accounting.git`
-3. Create `.env.prod` from `.env.prod.example` — update all `CHANGE_ME` values
+3. Create `.env.prod` from `.env.prod.example` — update passwords and secrets
 4. Set `DB_SYNC=true` for first run (creates tables), then set to `false`
 5. Run: `docker compose -f docker-compose.prod.yml up -d --build`
-6. Enable CouchDB CORS: `source .env.prod && bash scripts/init-couchdb.sh`
-7. Verify: `curl http://localhost/api/health`
+6. Init CouchDB: `source .env.prod && bash scripts/init-couchdb.sh`
+7. Verify: `curl -k https://13-234-68-147.sslip.io/api/health`
 
 ### Key Deployment Files
 | File | Purpose |
 |------|---------|
 | `apps/web/Dockerfile` | Builds web + storefront, serves via nginx |
 | `apps/api/Dockerfile` | Multi-stage API build with prod-only deps |
-| `docker-compose.prod.yml` | 4-service production stack |
-| `.env.prod.example` | Complete env var template |
+| `apps/web/nginx.conf` | Nginx routing: `/` (main), `/shop/` (storefront), `/api/`, `/couchdb/` |
+| `apps/web/ngsw-config.json` | Service worker config (excludes `/shop/**`) |
+| `Caddyfile` | Caddy HTTPS reverse proxy config |
+| `docker-compose.prod.yml` | 5-service production stack (project name: `gonok`) |
+| `.env.prod.example` | Complete env var template (includes `DOMAIN`) |
 | `.github/workflows/deploy.yml` | CI/CD: build, test, deploy to EC2 |
-| `scripts/init-couchdb.sh` | Enable CouchDB CORS |
+| `scripts/init-couchdb.sh` | Creates system DBs + enables CORS (runs via `docker exec`) |
 | `terraform/main.tf` | EC2 + security group IaC |
+
+### Known Deployment Gotchas
+- **TypeORM entity types**: Union types like `string | null` need explicit `type: 'varchar'` in `@Column` — TypeScript's `emitDecoratorMetadata` reflects them as `Object`, which PostgreSQL rejects
+- **Lazy repository init**: Services must NOT call `AppDataSource.getRepository()` in constructors — use lazy getters instead, since routes import before `AppDataSource.initialize()` runs
+- **nano v11 API**: Use `db.list()` not `db.allDocs()` — the method was renamed in nano v11
+- **Volume naming**: Always keep `name: gonok` in `docker-compose.prod.yml` to avoid orphaned volumes
+- **Service worker**: Must exclude `/shop/**` in `ngsw-config.json` `navigationUrls` or the PWA intercepts storefront routes
 
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->
