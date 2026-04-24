@@ -74,9 +74,11 @@ ls -t postgres_*.sql.gz 2>/dev/null | tail -n +$((DAILY_KEEP + 1)) | xargs -r rm
 ls -t couchdb_*.tar.gz 2>/dev/null | tail -n +$((DAILY_KEEP + 1)) | xargs -r rm -f
 
 # Weekly: keep last N weeks
-cd "${BACKUP_DIR}/weekly"
-ls -t postgres_*.sql.gz 2>/dev/null | tail -n +$((WEEKLY_KEEP + 1)) | xargs -r rm -f
-ls -t couchdb_*.tar.gz 2>/dev/null | tail -n +$((WEEKLY_KEEP + 1)) | xargs -r rm -f
+if ls "${BACKUP_DIR}/weekly"/postgres_*.sql.gz 1>/dev/null 2>&1; then
+  cd "${BACKUP_DIR}/weekly"
+  ls -t postgres_*.sql.gz 2>/dev/null | tail -n +$((WEEKLY_KEEP + 1)) | xargs -r rm -f
+  ls -t couchdb_*.tar.gz 2>/dev/null | tail -n +$((WEEKLY_KEEP + 1)) | xargs -r rm -f
+fi
 
 # ─── Done ────────────────────────────────────────────────
 TOTAL_SIZE=$(du -sh "${BACKUP_DIR}" | cut -f1)
