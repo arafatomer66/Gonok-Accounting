@@ -35,7 +35,8 @@
     "this_quarter": "এই কোয়ার্টার",
     "today": "আজ",
     "custom": "অন্যান্য",
-    "loading": "লোড হচ্ছে..."
+    "loading": "লোড হচ্ছে...",
+    "all": "সব"
   },
   "home": {
     "register": "রেজিস্ট্রেশন",
@@ -378,13 +379,28 @@
     "cancelled": "বাতিল",
     "receive_goods": "পণ্য গ্রহণ",
     "convert_invoice": "চালানে রূপান্তর",
+    "convert_to_invoice": "চালানে রূপান্তর",
+    "change_status": "অবস্থা পরিবর্তন",
+    "open_orders": "চলমান আদেশ",
+    "pending_grn": "মুলতুবি জিআরএন",
+    "total_value": "মোট মূল্য",
+    "items": "আইটেম",
+    "select_product": "পণ্য নির্বাচন করুন",
+    "product": "পণ্য",
+    "price": "মূল্য",
+    "qty": "পরিমাণ",
+    "total": "মোট",
     "grn_history": "জিআরএন ইতিহাস",
     "grn_no": "জিআরএন নং",
     "ordered": "অর্ডারকৃত",
+    "already_received": "ইতিমধ্যে প্রাপ্ত",
+    "remaining": "অবশিষ্ট",
+    "receiving_qty": "গ্রহণের পরিমাণ",
     "received_qty": "প্রাপ্ত",
     "receiving_now": "এখন গ্রহণ",
     "notes": "নোটস",
-    "empty": "কোন ক্রয় আদেশ নেই"
+    "empty": "কোন ক্রয় আদেশ নেই",
+    "no_orders": "কোন ক্রয় আদেশ নেই"
   },
   "credit": {
     "credit_limit": "ক্রেডিট সীমা",

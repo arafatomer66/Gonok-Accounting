@@ -35,7 +35,8 @@
     "this_quarter": "This Quarter",
     "today": "Today",
     "custom": "Custom",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "all": "All"
   },
   "home": {
     "register": "Register",
@@ -378,13 +379,28 @@
     "cancelled": "Cancelled",
     "receive_goods": "Receive Goods",
     "convert_invoice": "Convert to Invoice",
+    "convert_to_invoice": "Convert to Invoice",
+    "change_status": "Change Status",
+    "open_orders": "Open Orders",
+    "pending_grn": "Pending GRN",
+    "total_value": "Total Value",
+    "items": "Items",
+    "select_product": "Select a product",
+    "product": "Product",
+    "price": "Price",
+    "qty": "Qty",
+    "total": "Total",
     "grn_history": "GRN History",
     "grn_no": "GRN No",
     "ordered": "Ordered",
+    "already_received": "Already Received",
+    "remaining": "Remaining",
+    "receiving_qty": "Receiving Qty",
     "received_qty": "Received",
     "receiving_now": "Receiving Now",
     "notes": "Notes",
-    "empty": "No purchase orders yet"
+    "empty": "No purchase orders yet",
+    "no_orders": "No purchase orders yet"
   },
   "credit": {
     "credit_limit": "Credit Limit",
