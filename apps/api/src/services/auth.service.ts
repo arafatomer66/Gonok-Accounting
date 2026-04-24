@@ -7,12 +7,14 @@ import { env } from '../config/env';
 import { CouchDbService } from './couchdb.service';
 
 export class AuthService {
-  private userRepo: Repository<User>;
   private couchDb: CouchDbService;
 
   constructor() {
-    this.userRepo = AppDataSource.getRepository(User);
     this.couchDb = new CouchDbService();
+  }
+
+  private get userRepo(): Repository<User> {
+    return AppDataSource.getRepository(User);
   }
 
   async register(phone: string, name: string): Promise<{ message: string }> {

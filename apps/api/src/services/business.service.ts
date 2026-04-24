@@ -4,14 +4,18 @@ import { Business, BusinessUser } from '../entities';
 import { CouchDbService } from './couchdb.service';
 
 export class BusinessService {
-  private businessRepo: Repository<Business>;
-  private businessUserRepo: Repository<BusinessUser>;
   private couchDb: CouchDbService;
 
   constructor() {
-    this.businessRepo = AppDataSource.getRepository(Business);
-    this.businessUserRepo = AppDataSource.getRepository(BusinessUser);
     this.couchDb = new CouchDbService();
+  }
+
+  private get businessRepo(): Repository<Business> {
+    return AppDataSource.getRepository(Business);
+  }
+
+  private get businessUserRepo(): Repository<BusinessUser> {
+    return AppDataSource.getRepository(BusinessUser);
   }
 
   async listForUser(userUuid: string): Promise<Business[]> {
