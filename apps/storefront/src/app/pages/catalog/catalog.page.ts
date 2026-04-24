@@ -104,89 +104,104 @@ import type {
     .catalog {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 1.5rem;
+      padding: 2rem 1.5rem 3rem;
     }
     .catalog__toolbar {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
     }
     .catalog__info {
-      font-size: 0.85rem;
-      color: #888;
-      margin-bottom: 1rem;
+      font-size: 0.82rem;
+      color: #8b8fa3;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
     }
     .catalog__grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5rem;
     }
     .catalog__loading {
       text-align: center;
-      padding: 4rem 1rem;
-      color: #888;
+      padding: 5rem 1rem;
+      color: #8b8fa3;
     }
     .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid #eee;
-      border-top-color: #1a73e8;
+      width: 44px;
+      height: 44px;
+      border: 3px solid #e8eaf0;
+      border-top-color: #4361ee;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
-      margin: 0 auto 1rem;
+      margin: 0 auto 1.25rem;
     }
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
     .catalog__empty {
       text-align: center;
-      padding: 4rem 1rem;
-      color: #aaa;
+      padding: 5rem 1rem;
+      color: #b0b3c0;
+    }
+    .catalog__empty svg {
+      opacity: 0.5;
     }
     .catalog__empty p {
-      margin-top: 1rem;
+      margin-top: 1.25rem;
       font-size: 1.1rem;
+      font-weight: 500;
+      color: #6b7085;
     }
     .catalog__error {
       text-align: center;
-      padding: 2rem;
-      color: #c62828;
+      padding: 3rem;
+      color: #ef4444;
+      background: #fef2f2;
+      border-radius: 16px;
+      margin-top: 1rem;
     }
     .catalog__pagination {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 1rem;
-      margin-top: 2rem;
-      padding: 1rem 0;
+      margin-top: 3rem;
+      padding: 1.25rem 0;
     }
     .pagination-btn {
-      padding: 0.5rem 1.25rem;
-      border: 1px solid #ddd;
-      border-radius: 8px;
+      padding: 0.6rem 1.5rem;
+      border: 1.5px solid #e8eaf0;
+      border-radius: 12px;
       background: #fff;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.25s cubic-bezier(.4,0,.2,1);
+      font-family: inherit;
+      color: #1a1a2e;
     }
     .pagination-btn:hover:not(:disabled) {
-      border-color: #1a73e8;
-      color: #1a73e8;
+      border-color: #4361ee;
+      color: #4361ee;
+      box-shadow: 0 2px 8px rgba(67,97,238,0.12);
     }
     .pagination-btn:disabled {
-      opacity: 0.4;
+      opacity: 0.35;
       cursor: not-allowed;
     }
     .pagination-info {
-      font-size: 0.9rem;
-      color: #666;
+      font-size: 0.88rem;
+      color: #6b7085;
+      font-weight: 500;
     }
     @media (max-width: 600px) {
-      .catalog { padding: 1rem; }
+      .catalog { padding: 1.25rem 1rem 2rem; }
       .catalog__grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
+        gap: 0.85rem;
       }
     }
   `,

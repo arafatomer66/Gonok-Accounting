@@ -5,17 +5,18 @@
 }
 
 html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  color: #333;
+  color: #1a1a2e;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background: #f8f9fa;
+  background: #f7f8fc;
   min-height: 100vh;
 }
 
@@ -26,4 +27,9 @@ a {
 img {
   max-width: 100%;
   height: auto;
+}
+
+::selection {
+  background: #4361ee;
+  color: #fff;
 }

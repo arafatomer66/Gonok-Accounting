@@ -31,27 +31,33 @@ import type { IStorefrontCategory } from '@org/shared-types';
       flex-wrap: wrap;
     }
     .category-pill {
-      padding: 0.4rem 1rem;
-      border: 1px solid #ddd;
-      border-radius: 20px;
+      padding: 0.5rem 1.15rem;
+      border: 1.5px solid #e8eaf0;
+      border-radius: 24px;
       background: #fff;
-      color: #555;
-      font-size: 0.85rem;
+      color: #5a5d72;
+      font-size: 0.82rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.25s cubic-bezier(.4,0,.2,1);
       white-space: nowrap;
+      font-family: inherit;
+      letter-spacing: 0.01em;
     }
     .category-pill:hover {
-      border-color: #1a73e8;
-      color: #1a73e8;
+      border-color: #4361ee;
+      color: #4361ee;
+      background: rgba(67,97,238,0.04);
     }
     .category-pill--active {
-      background: #1a73e8;
-      border-color: #1a73e8;
+      background: linear-gradient(135deg, #4361ee, #7c3aed);
+      border-color: transparent;
       color: #fff;
+      box-shadow: 0 2px 10px rgba(67,97,238,0.25);
     }
     .category-pill--active:hover {
       color: #fff;
+      background: linear-gradient(135deg, #3a56d4, #6b32c9);
     }
   `,
 })
