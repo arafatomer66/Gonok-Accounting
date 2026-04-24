@@ -239,6 +239,48 @@ async addThing(data: Partial<IThing>): Promise<IThing> {
 - Storefront dev proxy at `apps/storefront/proxy.conf.json` forwards `/api` to `localhost:3333`
 - Business `slug` and `storefront_enabled` columns are on the PostgreSQL `businesses` table
 
+## Deployment & CI/CD
+
+### AWS Infrastructure
+- **EC2**: `13.234.68.147` (ap-south-1, t3.small, Ubuntu 22.04) — managed via `terraform/main.tf`
+- **SSH**: `ssh -i ~/.ssh/gonok.pem ubuntu@13.234.68.147`
+- **Security group**: Ports 80, 443, 22 open
+
+### Docker (Production)
+```bash
+docker compose -f docker-compose.prod.yml up -d --build   # Build and start all services
+docker compose -f docker-compose.prod.yml logs api -f      # Tail API logs
+docker compose -f docker-compose.prod.yml ps               # Check service status
+```
+
+**Services**: web (nginx, port 80), api (Express, port 3333 internal), postgres (5432 internal), couchdb (5984 internal)
+
+### CI/CD Pipeline
+- **File**: `.github/workflows/deploy.yml`
+- **Trigger**: Push to `main` or manual dispatch
+- **Flow**: Build & test (Node 20) → Deploy via SSH (git pull + docker compose up --build)
+- **GitHub Secrets**: `EC2_SSH_KEY`, `EC2_HOST`, `EC2_USER`
+
+### First Deploy Checklist
+1. SSH into EC2: `ssh -i ~/.ssh/gonok.pem ubuntu@13.234.68.147`
+2. Clone repo: `git clone https://github.com/arafatomer66/Gonok-Accounting.git`
+3. Create `.env.prod` from `.env.prod.example` — update all `CHANGE_ME` values
+4. Set `DB_SYNC=true` for first run (creates tables), then set to `false`
+5. Run: `docker compose -f docker-compose.prod.yml up -d --build`
+6. Enable CouchDB CORS: `source .env.prod && bash scripts/init-couchdb.sh`
+7. Verify: `curl http://localhost/api/health`
+
+### Key Deployment Files
+| File | Purpose |
+|------|---------|
+| `apps/web/Dockerfile` | Builds web + storefront, serves via nginx |
+| `apps/api/Dockerfile` | Multi-stage API build with prod-only deps |
+| `docker-compose.prod.yml` | 4-service production stack |
+| `.env.prod.example` | Complete env var template |
+| `.github/workflows/deploy.yml` | CI/CD: build, test, deploy to EC2 |
+| `scripts/init-couchdb.sh` | Enable CouchDB CORS |
+| `terraform/main.tf` | EC2 + security group IaC |
+
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->
 
