@@ -97,6 +97,7 @@ All in `apps/web/src/app/features/`:
 | TransactionListComponent | `shared/components/transaction-list/` | Reusable transaction table with profit display |
 | TransactionFormComponent | `shared/components/transaction-form/` | Reusable sale/purchase form |
 | ConfirmDialogComponent | `shared/components/confirm-dialog/` | Reusable confirm modal |
+| ImageUploadComponent | `shared/components/image-upload/` | Drag-and-drop image upload to S3/CloudFront CDN |
 
 ## Shared Types (ETables enum)
 
@@ -367,6 +368,11 @@ docker compose -f docker-compose.prod.yml ps               # Check service statu
 | `.github/workflows/deploy.yml` | CI/CD: build, test, deploy to EC2 |
 | `scripts/init-couchdb.sh` | Creates system DBs + enables CORS (runs via `docker exec`) |
 | `terraform/main.tf` | EC2 + security group IaC |
+| `terraform/cdn.tf` | S3 bucket + CloudFront CDN + IAM uploader user |
+| `scripts/backup.sh` | Daily automated backup (PostgreSQL + CouchDB) |
+| `scripts/restore.sh` | Interactive restore from backup |
+| `apps/api/src/routes/upload.routes.ts` | Image upload/delete API (`POST/DELETE /api/v1/upload/image`) |
+| `apps/api/src/services/upload.service.ts` | S3 upload with CloudFront URL generation |
 
 ### Known Deployment Gotchas
 - **TypeORM entity types**: Union types like `string | null` need explicit `type: 'varchar'` in `@Column` — TypeScript's `emitDecoratorMetadata` reflects them as `Object`, which PostgreSQL rejects
