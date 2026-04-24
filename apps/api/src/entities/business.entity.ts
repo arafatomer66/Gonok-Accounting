@@ -23,7 +23,7 @@ export class Business {
   @Column({ default: '' })
   logo_url: string;
 
-  @Column({ type: 'jsonb', default: {} })
+  @Column({ type: 'jsonb', default: () => "'{}'" })
   address: {
     display_address: string | null;
     city: string | null;
@@ -31,7 +31,7 @@ export class Business {
     country_code: string | null;
   };
 
-  @Column({ length: 100, nullable: true, unique: true })
+  @Column({ type: 'varchar', length: 100, nullable: true, unique: true })
   slug: string | null;
 
   @Column({ default: false })

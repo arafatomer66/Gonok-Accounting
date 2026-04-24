@@ -11,6 +11,11 @@ AUTH_URL="http://${COUCH_USER}:${COUCH_PASS}@$(echo "$COUCH_URL" | sed 's|http:/
 
 echo "Enabling CouchDB CORS at ${COUCH_URL}..."
 
+# Create required system databases (silently skip if they already exist)
+curl -sf -X PUT "${AUTH_URL}/_users" > /dev/null 2>&1 || true
+curl -sf -X PUT "${AUTH_URL}/_replicator" > /dev/null 2>&1 || true
+curl -sf -X PUT "${AUTH_URL}/_global_changes" > /dev/null 2>&1 || true
+
 curl -sf -X PUT "${AUTH_URL}/_node/_local/_config/httpd/enable_cors" -d '"true"'
 curl -sf -X PUT "${AUTH_URL}/_node/_local/_config/cors/origins" -d '"*"'
 curl -sf -X PUT "${AUTH_URL}/_node/_local/_config/cors/credentials" -d '"true"'
