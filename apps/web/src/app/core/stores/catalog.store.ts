@@ -20,6 +20,7 @@ import {
   EPartyGroup,
 } from '@org/shared-types';
 import { ActivityLogService } from '../services/activity-log.service';
+import { BranchStore } from './branch.store';
 import { DEFAULT_UNITS } from '../../features/products/data/default-units';
 
 interface CatalogState {
@@ -132,6 +133,7 @@ export const CatalogStore = signalStore(
     const pouchDb = inject(PouchDbService);
     const authStore = inject(AuthStore);
     const activityLog = inject(ActivityLogService);
+    const branchStore = inject(BranchStore);
 
     function getBizUuid(): string {
       const uuid = authStore.activeBusinessUuid();
@@ -157,9 +159,20 @@ export const CatalogStore = signalStore(
           ]);
 
         // Migrate products missing stock_by_branch
+        const mainBranch = branchStore.mainBranch();
         for (let i = 0; i < products.length; i++) {
-          if (products[i].stock_by_branch === undefined || products[i].stock_by_branch === null) {
-            products[i] = { ...products[i], stock_by_branch: {} };
+          const needsMigration = products[i].stock_by_branch === undefined || products[i].stock_by_branch === null;
+          const hasUnallocatedStock = needsMigration || (
+            products[i].quantity > 0 &&
+            Object.keys(products[i].stock_by_branch ?? {}).length === 0
+          );
+
+          if (needsMigration || hasUnallocatedStock) {
+            // If branches exist and product has stock, assign to main branch
+            const stockByBranch = (mainBranch && products[i].quantity > 0)
+              ? { [mainBranch.uuid]: products[i].quantity }
+              : {};
+            products[i] = { ...products[i], stock_by_branch: stockByBranch };
             await pouchDb.put(
               ETables.PRODUCT,
               products[i].uuid,

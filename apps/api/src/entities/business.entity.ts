@@ -31,6 +31,12 @@ export class Business {
     country_code: string | null;
   };
 
+  @Column({ length: 100, nullable: true, unique: true })
+  slug: string | null;
+
+  @Column({ default: false })
+  storefront_enabled: boolean;
+
   @CreateDateColumn()
   created_at: Date;
 

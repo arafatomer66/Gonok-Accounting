@@ -8,7 +8,7 @@ import {
 } from '@ngrx/signals';
 import { PouchDbService } from '../services/pouchdb.service';
 import { AuthStore } from './auth.store';
-import { IBranch, ETables } from '@org/shared-types';
+import { IBranch, IProduct, ETables } from '@org/shared-types';
 import { ActivityLogService } from '../services/activity-log.service';
 
 const ACTIVE_BRANCH_KEY = 'gonok_active_branch';
@@ -129,10 +129,27 @@ export const BranchStore = signalStore(
         );
         patchState(store, { branches });
 
-        // Auto-select if first branch
+        // Auto-select if first branch and migrate existing stock
         if (branches.length === 1) {
           localStorage.setItem(ACTIVE_BRANCH_KEY, uuid);
           patchState(store, { activeBranchUuid: uuid });
+
+          // Migrate existing product stock to this first branch
+          const products = await pouchDb.findByBusiness<IProduct>(ETables.PRODUCT, getBizUuid());
+          for (const product of products) {
+            if (product.quantity > 0 && (!product.stock_by_branch || Object.keys(product.stock_by_branch).length === 0)) {
+              const updated = {
+                ...product,
+                stock_by_branch: { [uuid]: product.quantity },
+                updated_at: Date.now(),
+              };
+              await pouchDb.put(
+                ETables.PRODUCT,
+                product.uuid,
+                updated as unknown as Record<string, unknown>,
+              );
+            }
+          }
         }
 
         return branch;

@@ -105,4 +105,15 @@ export class BusinessService {
   async removeUser(bizId: string, userUuid: string): Promise<void> {
     await this.businessUserRepo.delete({ business_uuid: bizId, user_uuid: userUuid });
   }
+
+  async getBySlug(slug: string): Promise<Business | null> {
+    return this.businessRepo.findOne({ where: { slug, storefront_enabled: true } });
+  }
+
+  async getOwnerUuid(businessUuid: string): Promise<string | null> {
+    const owner = await this.businessUserRepo.findOne({
+      where: { business_uuid: businessUuid, role: 'owner' },
+    });
+    return owner?.user_uuid ?? null;
+  }
 }

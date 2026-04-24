@@ -2,13 +2,14 @@
 
 ## Overview
 
-Gonok is a full-featured offline-first accounting ERP for Bangladeshi small businesses. Monorepo using Nx with two apps (`web` and `api`) and a shared types library.
+Gonok is a full-featured offline-first accounting ERP for Bangladeshi small businesses. Monorepo using Nx with three apps (`web`, `api`, and `storefront`) and a shared types library.
 
 ## Architecture
 
 ```
 apps/
   web/          → Angular 21 frontend (standalone components, signals, PouchDB)
+  storefront/   → Angular 21 public product catalog (lightweight, no PouchDB/ngrx)
   api/          → Express/Node.js backend (TypeORM, PostgreSQL, JWT auth)
 libs/
   shared-types/ → Shared TypeScript interfaces, enums, models
@@ -30,11 +31,19 @@ cypress/        → Cypress e2e tests (9 specs, 59 tests)
 - **CouchDB provisioning** — per-user databases (`gonok-{userUuid}`)
 - API base: `/api/v1`
 
+### Storefront Stack (Micro-Frontend)
+- **Angular 21** lightweight app — no PouchDB, no @ngrx/signals, no auth
+- **Plain Angular signals** (`signal()`, `computed()`) for local state
+- **HttpClient** calls to public storefront API endpoints
+- **Separate build/deploy** — served at `/shop/*` via nginx
+- Shares `@org/shared-types` with web and api apps
+
 ### Data Flow
 - All business data lives in **PouchDB** (browser IndexedDB)
 - PouchDB syncs bidirectionally with **CouchDB** (per-user databases)
 - PostgreSQL stores only auth data (users, businesses, business_users)
 - Document IDs: `{table_type}::{uuid}` (e.g., `product::abc-123`)
+- **Storefront data flow**: Public API reads CouchDB directly via `nano` (admin credentials, server-side only)
 
 ## Stores
 
@@ -94,13 +103,62 @@ All in `apps/web/src/app/features/`:
 All entity types in `libs/shared-types/src/lib/enums/tables.enum.ts`:
 `PRODUCT`, `PRODUCT_CATEGORY`, `PRODUCT_UNIT`, `PARTY`, `PARTY_GROUP`, `TRANSACTION`, `TRANSACTION_ITEM`, `EXPENSE`, `EXPENSE_CATEGORY`, `SETTINGS`, `BALANCE_SHEET`, `QUOTATION`, `QUOTATION_ITEM`, `RECURRING_EXPENSE`, `EMPLOYEE`, `SALARY`, `DELIVERY`, `DELIVERY_ITEM`
 
+## Storefront App (Public Catalog)
+
+### Architecture
+The storefront is a **micro-frontend** (Option 2 — separate app, shared types). It's a completely independent Angular app that fetches data from public API endpoints.
+
+**Resolution chain**: `businessSlug` (URL) → PostgreSQL `businesses` table → `business_users` owner → CouchDB `gonok-{userUuid}`
+
+### Storefront Routes
+All in `apps/storefront/src/app/`:
+
+| Route | Page | Description |
+|-------|------|-------------|
+| `/:businessSlug` | CatalogPage | Product grid with search, category filter, pagination |
+| `/:businessSlug/product/:slugOrUuid` | ProductDetailPage | Single product view |
+| `/` | LandingPage | Default landing |
+
+### Public API Endpoints (no auth)
+All at `/api/v1/storefront/` — rate limited (200 req/15min/IP):
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /:businessSlug` | Business info (name, phone, address, logo) |
+| `GET /:businessSlug/products?page=&limit=&category=&search=` | Paginated product listing |
+| `GET /:businessSlug/products/:slugOrUuid` | Single product detail |
+| `GET /:businessSlug/categories` | Category list |
+
+### Storefront Components
+| Component | Path | Purpose |
+|-----------|------|---------|
+| BusinessHeaderComponent | `components/business-header/` | Store logo, name, contact |
+| ProductCardComponent | `components/product-card/` | Product tile with image, price, discount |
+| CategoryFilterComponent | `components/category-filter/` | Category pill filter |
+| SearchBarComponent | `components/search-bar/` | Debounced search input |
+
+### Enabling Storefront for a Business
+1. Go to Settings > Storefront tab in the main app
+2. Enable storefront toggle
+3. Set a URL slug (lowercase, hyphens, alphanumeric)
+4. Save — the store is accessible at `/shop/{slug}`
+
+### Storefront Key Files
+- `apps/storefront/` — Angular app (port 4300 in dev)
+- `apps/api/src/routes/storefront.routes.ts` — Public API routes
+- `apps/api/src/services/storefront.service.ts` — CouchDB query service
+- `libs/shared-types/src/lib/models/storefront.model.ts` — Storefront interfaces
+- `apps/web/nginx.conf` — Nginx `/shop/` routing block
+
 ## Running the Project
 
 ```bash
 docker compose up -d              # Start PostgreSQL + CouchDB
 npx nx serve api                  # API on port 3333
 npx nx serve web                  # Web on port 4200
-npx nx build web                  # Production build
+npx nx serve storefront           # Storefront on port 4300
+npx nx build web                  # Production build (main app)
+npx nx build storefront           # Production build (storefront)
 npx cypress run --browser chrome  # E2E tests
 ```
 
@@ -177,6 +235,9 @@ async addThing(data: Partial<IThing>): Promise<IThing> {
 - The proxy config (`apps/web/proxy.conf.json`) forwards `/api` to `localhost:3333`
 - CouchDB CORS must be enabled for cross-browser sync to work
 - `npx nx reset` clears build cache if config changes aren't picked up
+- **Storefront** is served at `/shop/*` in production via nginx (`apps/web/nginx.conf`)
+- Storefront dev proxy at `apps/storefront/proxy.conf.json` forwards `/api` to `localhost:3333`
+- Business `slug` and `storefront_enabled` columns are on the PostgreSQL `businesses` table
 
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->

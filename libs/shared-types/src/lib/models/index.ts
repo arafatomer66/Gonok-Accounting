@@ -18,3 +18,4 @@ export * from './task.model.js';
 export * from './stock-transfer.model.js';
 export * from './logistics.model.js';
 export * from './branch.model.js';
+export * from './storefront.model.js';

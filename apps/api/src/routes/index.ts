@@ -3,11 +3,13 @@ import authRoutes from './auth.routes';
 import businessRoutes from './business.routes';
 import userRoutes from './user.routes';
 import syncRoutes from './sync.routes';
+import storefrontRoutes from './storefront.routes';
 
 const router = Router();
 
 // Public
 router.use('/auth', authRoutes);
+router.use('/storefront', storefrontRoutes);
 
 // Authenticated
 router.use('/businesses', businessRoutes);

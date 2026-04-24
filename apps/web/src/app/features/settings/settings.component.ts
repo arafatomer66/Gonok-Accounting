@@ -1,5 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { PouchDbService } from '../../core/services/pouchdb.service';
 import { AuthStore } from '../../core/stores/auth.store';
 import {
@@ -107,6 +108,7 @@ const DEFAULT_EXPORT_SETTINGS: IExportSettings = {
         <button class="tab" [class.tab--active]="activeTab() === 'party'" (click)="activeTab.set('party')">Party</button>
         <button class="tab" [class.tab--active]="activeTab() === 'transaction'" (click)="activeTab.set('transaction')">Transaction</button>
         <button class="tab" [class.tab--active]="activeTab() === 'export'" (click)="activeTab.set('export')">Export</button>
+        <button class="tab" [class.tab--active]="activeTab() === 'storefront'" (click)="activeTab.set('storefront')">Storefront</button>
       </div>
 
       <!-- Item Settings -->
@@ -293,6 +295,57 @@ const DEFAULT_EXPORT_SETTINGS: IExportSettings = {
         </div>
       }
 
+      <!-- Storefront Settings -->
+      @if (activeTab() === 'storefront') {
+        <div class="card">
+          <div class="card__header"><h3 class="card__title">Storefront Settings</h3></div>
+          <div class="card__body">
+            <p class="storefront-desc">Enable a public product catalog that customers can browse without logging in.</p>
+
+            <label class="toggle-row" style="margin-bottom: 1rem;">
+              <input type="checkbox" [(ngModel)]="storefrontEnabled" name="sfEnabled" />
+              <span>Enable Storefront</span>
+            </label>
+
+            @if (storefrontEnabled) {
+              <div class="form-group">
+                <label class="form-label">Store URL Slug</label>
+                <input
+                  class="form-input"
+                  type="text"
+                  [(ngModel)]="storefrontSlug"
+                  name="sfSlug"
+                  placeholder="my-store"
+                  pattern="[a-z0-9-]+"
+                  maxlength="100"
+                />
+                <small class="storefront-hint">
+                  Only lowercase letters, numbers, and hyphens. Your store will be at: <code>/shop/{{ storefrontSlug || 'my-store' }}</code>
+                </small>
+              </div>
+
+              @if (storefrontSlug) {
+                <button class="btn btn--sm" style="margin-top: 0.5rem;" (click)="copyStorefrontLink()">
+                  {{ storefrontLinkCopied() ? 'Copied!' : 'Copy Store Link' }}
+                </button>
+              }
+            }
+
+            <div class="save-bar" style="margin-top: 1.5rem;">
+              <button class="btn btn--primary" (click)="saveStorefront()" [disabled]="savingStorefront()">
+                {{ savingStorefront() ? 'Saving...' : 'Save Storefront Settings' }}
+              </button>
+              @if (storefrontSaved()) {
+                <span class="save-msg">Storefront settings saved!</span>
+              }
+              @if (storefrontError()) {
+                <span class="save-error">{{ storefrontError() }}</span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
       <div class="save-bar">
         <button class="btn btn--primary" (click)="save()" [disabled]="saving()">
           {{ saving() ? 'Saving...' : 'Save Settings' }}
@@ -370,16 +423,50 @@ const DEFAULT_EXPORT_SETTINGS: IExportSettings = {
     }
 
     .text-muted { color: $color-text-secondary; }
+
+    .storefront-desc {
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+      margin: 0 0 $space-3;
+    }
+
+    .storefront-hint {
+      display: block;
+      margin-top: $space-1;
+      font-size: 12px;
+      color: $color-text-secondary;
+
+      code {
+        background: darken($color-bg, 5%);
+        padding: 1px 4px;
+        border-radius: 3px;
+      }
+    }
+
+    .save-error {
+      color: $color-danger;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+    }
   `,
 })
 export class SettingsComponent implements OnInit {
   private pouchDb = inject(PouchDbService);
   private authStore = inject(AuthStore);
+  private http = inject(HttpClient);
 
   loading = signal(true);
   saving = signal(false);
   saved = signal(false);
-  activeTab = signal<'item' | 'party' | 'transaction' | 'export'>('item');
+  activeTab = signal<'item' | 'party' | 'transaction' | 'export' | 'storefront'>('item');
+
+  // Storefront settings
+  storefrontSlug = '';
+  storefrontEnabled = false;
+  savingStorefront = signal(false);
+  storefrontSaved = signal(false);
+  storefrontError = signal<string | null>(null);
+  storefrontLinkCopied = signal(false);
 
   private settingsUuid = '';
 
@@ -408,6 +495,17 @@ export class SettingsComponent implements OnInit {
     } catch {
       // First time — use defaults
     }
+
+    // Load storefront settings from API
+    this.http.get<{ success: boolean; data: any }>(`/api/v1/businesses/${bizUuid}`).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.storefrontSlug = res.data.slug || '';
+          this.storefrontEnabled = res.data.storefront_enabled || false;
+        }
+      },
+    });
+
     this.loading.set(false);
   }
 
@@ -440,5 +538,51 @@ export class SettingsComponent implements OnInit {
     this.saving.set(false);
     this.saved.set(true);
     setTimeout(() => this.saved.set(false), 3000);
+  }
+
+  saveStorefront(): void {
+    const bizUuid = this.authStore.activeBusinessUuid();
+    if (!bizUuid) return;
+
+    // Validate slug format
+    const slug = this.storefrontSlug.trim().toLowerCase();
+    if (this.storefrontEnabled && !slug) {
+      this.storefrontError.set('Please enter a store URL slug');
+      return;
+    }
+    if (slug && !/^[a-z0-9-]+$/.test(slug)) {
+      this.storefrontError.set('Slug can only contain lowercase letters, numbers, and hyphens');
+      return;
+    }
+
+    this.savingStorefront.set(true);
+    this.storefrontError.set(null);
+    this.storefrontSaved.set(false);
+
+    this.http
+      .put<{ success: boolean; error?: string }>(`/api/v1/businesses/${bizUuid}`, {
+        slug: slug || null,
+        storefront_enabled: this.storefrontEnabled,
+      })
+      .subscribe({
+        next: () => {
+          this.storefrontSlug = slug;
+          this.savingStorefront.set(false);
+          this.storefrontSaved.set(true);
+          setTimeout(() => this.storefrontSaved.set(false), 3000);
+        },
+        error: (err) => {
+          this.savingStorefront.set(false);
+          this.storefrontError.set(err.error?.error || 'Failed to save storefront settings');
+        },
+      });
+  }
+
+  copyStorefrontLink(): void {
+    const link = `${window.location.origin}/shop/${this.storefrontSlug}`;
+    navigator.clipboard.writeText(link).then(() => {
+      this.storefrontLinkCopied.set(true);
+      setTimeout(() => this.storefrontLinkCopied.set(false), 2000);
+    });
   }
 }

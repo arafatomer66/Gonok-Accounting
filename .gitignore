@@ -43,3 +43,7 @@ terraform/terraform.tfvars
 
 # Misc
 *.tgz
+
+.angular
+
+__screenshots__/
