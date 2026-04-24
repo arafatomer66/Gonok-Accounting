@@ -1,0 +1,90 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build shared-types
+        run: npx nx build shared-types
+
+      - name: Build all apps
+        run: npx nx run-many -t build --projects=web,storefront,@org/api --parallel=3
+
+      - name: Lint
+        run: npx nx run-many -t lint --projects=web,storefront --parallel=2
+        continue-on-error: true
+
+  deploy:
+    name: Deploy to AWS
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -e
+            cd ~/Gonok-Accounting || git clone https://github.com/arafatomer66/Gonok-Accounting.git ~/Gonok-Accounting && cd ~/Gonok-Accounting
+
+            # Pull latest code
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Create .env.prod from example if it doesn't exist
+            if [ ! -f .env.prod ]; then
+              cp .env.prod.example .env.prod
+              echo "WARNING: .env.prod created from example — update secrets before production use!"
+            fi
+
+            # Load env vars for docker compose
+            set -a && source .env.prod && set +a
+
+            # Build and deploy
+            docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+
+            # Wait for API to be healthy
+            echo "Waiting for API health check..."
+            for i in $(seq 1 30); do
+              if curl -sf http://localhost/api/health > /dev/null 2>&1; then
+                echo "API is healthy!"
+                break
+              fi
+              if [ $i -eq 30 ]; then
+                echo "API health check failed after 30 attempts"
+                docker compose -f docker-compose.prod.yml logs api --tail=50
+                exit 1
+              fi
+              sleep 2
+            done
+
+            # Enable CouchDB CORS
+            bash scripts/init-couchdb.sh || echo "CouchDB CORS init skipped"
+
+            # Show running containers
+            docker compose -f docker-compose.prod.yml ps
+
+            echo "Deployment complete!"

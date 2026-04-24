@@ -6,7 +6,8 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - gonok-net
@@ -24,7 +25,7 @@ services:
       postgres:
         condition: service_healthy
       couchdb:
-        condition: service_started
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - gonok-net
@@ -32,13 +33,13 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: ${DB_USERNAME:-gonok}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-gonok}
-      POSTGRES_DB: ${DB_NAME:-gonok}
+      POSTGRES_USER: ${POSTGRES_USER:-gonok}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gonok}
+      POSTGRES_DB: ${POSTGRES_DB:-gonok}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-gonok}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gonok}"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -53,6 +54,11 @@ services:
       COUCHDB_PASSWORD: ${COUCHDB_PASSWORD:-password}
     volumes:
       - couchdata:/opt/couchdb/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5984/_up"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     restart: unless-stopped
     networks:
       - gonok-net
