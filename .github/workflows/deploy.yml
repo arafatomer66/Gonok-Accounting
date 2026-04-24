@@ -63,10 +63,15 @@ jobs:
             # Load env vars for docker compose
             set -a && source .env.prod && set +a
 
-            # Stop anything using port 80 (previous deploys, nginx, apache)
+            # Stop anything using port 80
             sudo systemctl stop nginx 2>/dev/null || true
+            sudo systemctl disable nginx 2>/dev/null || true
             sudo systemctl stop apache2 2>/dev/null || true
+            sudo systemctl disable apache2 2>/dev/null || true
             docker compose -f docker-compose.prod.yml down 2>/dev/null || true
+            # Kill any remaining process on port 80
+            sudo fuser -k 80/tcp 2>/dev/null || true
+            sleep 1
 
             # Build and deploy
             docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
