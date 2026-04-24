@@ -31,7 +31,7 @@ export class StorefrontService {
 
     // Fetch products and categories in parallel
     const [productResult, categories] = await Promise.all([
-      db.allDocs({
+      db.list({
         include_docs: true,
         startkey: 'product::',
         endkey: 'product::\ufff0',
@@ -111,7 +111,7 @@ export class StorefrontService {
     db: any,
     businessUuid: string,
   ): Promise<IStorefrontCategory[]> {
-    const result = await db.allDocs({
+    const result = await db.list({
       include_docs: true,
       startkey: 'category::',
       endkey: 'category::\ufff0',
