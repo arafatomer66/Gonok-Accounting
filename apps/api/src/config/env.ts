@@ -14,4 +14,11 @@ export const env = {
   COUCHDB_PUBLIC_URL: process.env.COUCHDB_PUBLIC_URL || '',
   COUCHDB_USERNAME: process.env.COUCHDB_USERNAME || 'admin',
   COUCHDB_PASSWORD: process.env.COUCHDB_PASSWORD || 'password',
+
+  // AWS S3 + CloudFront (image uploads)
+  AWS_REGION: process.env.AWS_REGION || 'ap-south-1',
+  AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID || '',
+  AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY || '',
+  AWS_S3_BUCKET: process.env.AWS_S3_BUCKET || 'gonok-uploads',
+  AWS_CLOUDFRONT_DOMAIN: process.env.AWS_CLOUDFRONT_DOMAIN || '',
 };

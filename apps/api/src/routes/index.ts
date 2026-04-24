@@ -4,6 +4,7 @@ import businessRoutes from './business.routes';
 import userRoutes from './user.routes';
 import syncRoutes from './sync.routes';
 import storefrontRoutes from './storefront.routes';
+import uploadRoutes from './upload.routes';
 
 const router = Router();
 
@@ -14,6 +15,7 @@ router.use('/storefront', storefrontRoutes);
 // Authenticated
 router.use('/businesses', businessRoutes);
 router.use('/sync', syncRoutes);
+router.use('/upload', uploadRoutes);
 
 // Business-scoped
 router.use('/businesses/:bizId/users', userRoutes);
